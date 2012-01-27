@@ -1,7 +1,6 @@
 #include "SceneManager.h"
-#include "EventHandler.h"
 #include "GameSystem.h"
-
+#include "ScreenLayer.h"
 #include "Sprite.h"
 #include "TextBox.h"
 
@@ -41,6 +40,8 @@ void SceneManager::Remove(SceneNode* cur) {
     fa_son.push_back(*it);
   }
 
+  obj.erase(std::find(obj.begin, obj.end(), cur->obj));
+
   luaL_unref(L, LUA_REGISTRYINDEX, cur->ref);
   delete cur;
 
@@ -52,6 +53,8 @@ void SceneManager::Insert(SceneNode *fa, SceneNode *cur) {
   fa->son.push_back(cur);
   cur->father = fa;
 
+  obj.push_back(cur->obj);
+
   GameSystem::resetFrameTimer(0);
 }
 
@@ -61,10 +64,6 @@ void SceneManager::Updata(SceneNode *cur) {
 
 void SceneManager::Release() {
   clear(root);
-}
-
-SceneNode* SceneManager::GetRoot() {
-  return root;
 }
 
 void SceneManager::SetRoot(SceneNode *root) {
@@ -87,11 +86,30 @@ GameObject *SceneManager::NewObject(SceneNode *cur) {
     return dynamic_cast<GameObject*> (TextBox::create(cur->ref));
 }
 
-void SceneManager::GetObjects(std::vector<GameObject*> &obj, SceneNode *cur) {
-  if (cur != root)
-    obj.push_back( cur->obj );
-  
-  for (std::vector<SceneNode*>::iterator it = cur->son.begin(); it != cur->son.end(); ++it)  
-    GetObjects(obj, *it);
+std::vector<GameObject*>& SceneManager::GetObjects() {
+  return obj;
 }
 
+void SceneManager::drawDirtyRect()
+{
+  // TODO: use dirtyinfo to calculate canvas
+}
+
+void SceneManager::fillDirtyRect()
+{
+  dw = ScreenLayer::GetInstance()->width / DW_WIDTH;
+  dh = ScreenLayer::GetInstance()->height / DW_HEIGHT;
+  memset(dirtyinfo, 0, sizeof(dirtyinfo));
+  for (int i = 0; i < obj.size(); ++i) {
+    LuaObject &handler = obj[i].handler;
+    
+    int x, y, w, h;
+    handler.LoadClip(x, y, w, h);
+    handler.LoadLocation(x, y);
+    for (int l0 = x/dw, l1 = (x+w)/dw, l = l0; l <= l1; ++l) {
+      for (int k0 = y/dh, k1 = (y+w)/dh, k = k0; k <= k1; ++k) {
+	dirtyinfo[l][k] = 1;
+      }
+    }
+  }
+}

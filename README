@@ -1,0 +1,9 @@
+FrameEvent驱动策略
+	1、在SceneManager中插入删除节点均产生FrameEvent
+	2、当一个FrameEvent导致EventHandler::OnFrame调用时，遍历SceneTree对场景中所有entity的状态进行更新，并根据每个entity的frame_event来确定下一次出现FrameEvent的时间
+
+ScriptEvent驱动策略
+	1、在TextBox处于无文字可输出的状态时发起ScriptEvent
+
+TODO
+	将renderer使用的算法改写为分块dirtyrect，思路:在EventHandler::OnFrame调用一个函数(需另外实现)获取dirtyrect的信息(大概是填写一个二维表，表示哪些块dirty)，遍历SceneTree获取需要绘制的块，这些块按顺序放到绘制队列，最后绘制。

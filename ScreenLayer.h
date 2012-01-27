@@ -21,7 +21,7 @@ class ScreenLayer
  public:
   SDL_Surface *screen;
   Uint32 width, height;
-
+  
  public: //与全局屏幕相关的数据
   Canvas mix_canvas;
 

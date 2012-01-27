@@ -6,8 +6,8 @@ function frame()
 		{
 		   data = {
 		      attribute = 'background',
-		      location = { x = 0, y = 0 }, 
-		      clip = { x = 0, y = 0, w = 800, h = 600 },
+		      location = LocationFunc.stable(0, 0), 
+		      clip = ClipFunc.stable(0, 0, 800, 600),
 		      img = 'data/yama.bmp'
 		   }
 		}
@@ -18,9 +18,9 @@ function frame()
 		   data = {
 		      attribute = 'sprite',
 		      clip = ClipFunc.move(1000, 0, 800, 600, -1, 0),
-		      location = { x = 1, y = 1 },
+		      location = LocationFunc.stable(1, 1),
 		      img = 'data/hima.png',
-		      frame_event = TimerFunc.FrameTimer(280)
+		      frame_event = TimerFunc.FrameTimer(200)
 		   }
 		}
 	     )
@@ -29,10 +29,10 @@ function frame()
 		     {
 			data = {
 			   attribute = 'sprite', 
-			   clip = { x = 0, y = 0, w = 350, h = 800},
+			   clip = ClipFunc.stable(0, 0, 350, 800),
 			   location = LocationFunc.circle(5, 400, 0, 0.2),
 			   img = 'data/mori.png',
-			   frame_event = TimerFunc.FrameTimer(220)
+			   frame_event = TimerFunc.FrameTimer(800)
 			}
 		     }
 		  )
@@ -41,9 +41,9 @@ function frame()
    			     {
    				data = { 
    				   attribute = 'textbox',
-   				   clip = { x = 0, y = 0, w = 800, h = 600 },
-   				   location = { x = 0, y = 200 },
-   				   frame_event = TimerFunc.FrameTimer(200),
+   				   clip = ClipFunc.stable(0, 0, 800, 600),
+   				   location = LocationFunc.stable(0, 200),
+   				   frame_event = TimerFunc.FrameTimer(100),
 				   
    				   OnMouseRange = RangeCheckFunc.retangle(0, 0, 800, 600),
 				   
@@ -126,8 +126,8 @@ function frame()
 	    {
 	       data = {
 		  attribute = 'sprite',
-		  clip = { x = 0, y = 0, w = 800, h = 600 }, 
-		  location = { x = 1, y = 1 },
+		  clip = ClipFunc.stable(0, 0, 800, 600),  
+		  location = LocationFunc.stable(1, 1),
 		  img = 'data/rogo.bmp',
 		  frame_event = TimerFunc.FrameTimer(280)
 	       }
@@ -145,8 +145,8 @@ function frame()
 		{
 		   data = {
 		      attribute = 'sprite',
-		      clip = { x = 0, y = 0, w = 800, h = 600 }, 
-		      location = { x = 1, y = 1 },
+		      clip = ClipFunc.stable(0, 0, 800, 600), 
+		      location = LocationFunc.stable(1, 1),
 		      img = 'data/bg_01a.png',
 		      frame_event = TimerFunc.FrameTimer(280)
 		   }
@@ -157,8 +157,8 @@ function frame()
 		   {
 		      data = { 
 			 attribute = 'textbox',
-			 clip = { x = 0, y = 0, w = 800, h = 600 },
-			 location = { x = 0, y = 400 },
+			 clip = ClipFunc.stable(0, 0, 800, 600) ,
+			 location = LocationFunc.stable(0,400),
 			 frame_event = TimerFunc.FrameTimer(280),
 			 
 			 OnMouseRange = RangeCheckFunc.retangle(0, 0, 800, 600),

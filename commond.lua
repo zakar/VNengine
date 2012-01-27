@@ -1,14 +1,13 @@
 function getFrame(fun)
    local func = coroutine.create(fun)
    return function ()
-	     state = coroutine.resume(func)
+	     local state = coroutine.resume(func)
 	     return state
 	  end
 end
 
 function Suspend()
    while true do
-      print('here')
       coroutine.yield()
    end
 end
@@ -26,25 +25,40 @@ LocationFunc.circle = function (r, x, y, det)
 		   local dx
 		   local dy
 
-		   return function ()
-			     dx = math.sin(angle)*r
-			     dy = math.cos(angle)*r
-			     angle = angle + det
-			     return {x = x + dx, y = y + dy}
+		   return function (cmd)
+			     if cmd == 'updata' then
+				dx = math.sin(angle)*r
+				dy = math.cos(angle)*r
+				angle = angle + det
+				return { x = x + dx, y = y + dy }
+			     else 
+				return { x = x, y = y }
+			     end
 			  end
 		end
 
-LocationFunc.none = function ()
-		 return nil
-	      end
+LocationFunc.stable = function (x, y)
+			 return function (cmd)
+				   return { x = x, y = y }
+				end
+		      end
 
+ClipFunc.stable = function (x, y, w, h)
+		     return function (cmd)
+			       return { x = x, y = y, w = w, h = h }
+			    end
+		  end
 
 
 ClipFunc.move = function (x, y, w, h, dx, dy)
-		   return function ()
-			     x = x + dx
-			     y = y + dy
-			     return { x = x, y = y, w = w, h = h }
+		   return function (cmd)
+			     if cmd == 'updata' then
+				x = x + dx
+				y = y + dy
+				return { x = x, y = y, w = w, h = h }
+			     else
+				return { x = x, y = y, w = w, h = h }
+			     end
 			  end
 		end
 
@@ -58,7 +72,8 @@ RangeCheckFunc.retangle = function (ux, uy, w, h)
 
 
 SceneFunc.GetNextFrameTime = function (t, last_ti)
-				cur = -1
+				local cur = -1
+				local ti
 				for k, v in pairs(t) do
 				   if type(k) == 'string' and k ~= 'data' then
 				      ti = SceneFunc.GetNextFrameTime(t[k], last_ti)
@@ -75,13 +90,13 @@ SceneFunc.GetNextFrameTime = function (t, last_ti)
 				   end
 				end
 
-				if cur == -1 then cur = 100 end
+				if cur == -1 then cur = 1000 end
 				return cur
 			     end
 
 
 TimerFunc.FrameTimer = function (interval)
-			  current = interval
+			  local current = interval
 			  return function (ti)
 				    current = current - ti
 				    if current <= 0 then current = interval end

@@ -14,6 +14,9 @@ extern "C" {
 
 #include "SceneNode.h"
 
+const int DW_WIDTH = 20;
+const int DW_HEIGHT = 20;
+
 class SceneManager 
 {
  public:
@@ -26,15 +29,22 @@ class SceneManager
   void Insert(SceneNode *fa, SceneNode *cur);
   void Updata(SceneNode *cur);
   void SetRoot(SceneNode *root);
-  SceneNode* GetRoot();
+
+  void dirtyInit();
+  void drawDirtyRect();
+  void fillDirtyRect();
 
  public:
   static GameObject *NewObject(SceneNode *cur); 
-  void GetObjects(std::vector<GameObject*> &obj, SceneNode *cur);
+  std::vector<GameObject*>& GetObjects();
 
  private:
   lua_State *L;
   SceneNode *root;
+  std::vector<GameObject*> obj;
+  
+  int dw, dh;
+  int dirtyinfo[DW_WIDTH][DW_HEIGHT];
 
  private:
   SceneManager();
