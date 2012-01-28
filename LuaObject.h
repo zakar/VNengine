@@ -25,6 +25,7 @@ class LuaObject
   void LoadWordLayer(std::string &imgName, Uint32 &width, Uint32 &height, Uint32 &BoxColor, Uint32 &TextColor, \
 		     Uint32 &WLoffX, Uint32 &WLoffY, Uint32 &WLwidth, Uint32 &WLheight, \
 		     std::string &fontName, Uint32 &fontSize, const char* cmd);
+  void LoadFrameTime(Uint32 &ti, const char* cmd);
   
   int ExecOnMouseRange(Uint32 x, Uint32 y, const char* cmd);
 

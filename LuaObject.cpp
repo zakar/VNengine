@@ -237,7 +237,28 @@ void LuaObject::LoadWordLayer(std::string &imgName, Uint32 &width, Uint32 &heigh
   lua_settop(L, 0);
 }
 
+void LuaObject::LoadFrameTime(Uint32 &ti, const char* cmd)
+{
+  lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
+  lua_getfield(L, 1, "data");
+  lua_getfield(L, 2, "frame_event");  
+  
+  if (!lua_isfunction(L, 3)) {
+    ti = -1;
+    return;
+  }
+
+  lua_pushinteger(L, ti);
+  lua_pushstring(L, cmd);
+  if (lua_pcall(L, 2, 1, 0))
+    puts("cha, the script is Invalid");
+
+  ti = lua_tointeger(L, 3);
+}
+
 void LuaObject::registerAPI(const std::string &obj) {
   if (obj == "textbox")
     TextBoxLuaAPI::luaopen_textboxapi(L, ref);
 }
+
+

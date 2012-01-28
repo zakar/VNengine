@@ -13,6 +13,8 @@ class ScreenLayer
   void SetWindowMode(Uint32 width, Uint32 height, bool fullScreen = false, int bpp=32);
   void SetTitle(const char* title);
   void Release();
+  Uint32 getWidth();
+  Uint32 getHeight();
 
  public:
   void AddCanvas(Canvas* obj);
@@ -32,5 +34,8 @@ class ScreenLayer
   ScreenLayer();
   void operator=(ScreenLayer&);
 };
+
+inline Uint32 getWidth() { return width; }
+inline Uint32 getHeight() { return height; }
 
 #endif

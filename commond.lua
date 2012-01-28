@@ -97,9 +97,13 @@ SceneFunc.GetNextFrameTime = function (t, last_ti)
 
 TimerFunc.FrameTimer = function (interval)
 			  local current = interval
-			  return function (ti)
-				    current = current - ti
-				    if current <= 0 then current = interval end
+			  return function (ti, cmd)
+				    if cmd == 'updata' then
+				       current = current - ti
+				       if current <= 0 then 
+					  current = interval 
+				       end
+				    end
 				    return current
 				 end
 		       end
