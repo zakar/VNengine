@@ -40,7 +40,7 @@ void SceneManager::Remove(SceneNode* cur) {
     fa_son.push_back(*it);
   }
 
-  obj.erase(std::find(obj.begin, obj.end(), cur->obj));
+  obj.erase(std::find(obj.begin(), obj.end(), cur->obj));
 
   luaL_unref(L, LUA_REGISTRYINDEX, cur->ref);
   delete cur;
@@ -64,6 +64,7 @@ void SceneManager::Updata(SceneNode *cur) {
 
 void SceneManager::Release() {
   clear(root);
+  obj.clear();
 }
 
 void SceneManager::SetRoot(SceneNode *root) {
@@ -74,7 +75,7 @@ GameObject *SceneManager::NewObject(SceneNode *cur) {
   
   std::string attr;
   LuaObject handler(cur->ref);
-  handler.LoadAttribute(attr);
+  handler.LoadAttribute(attr, "query");
   
   if (attr == "sprite")
     return dynamic_cast<GameObject*> (Sprite::create(cur->ref)); 
@@ -90,18 +91,44 @@ std::vector<GameObject*>& SceneManager::GetObjects() {
   return obj;
 }
 
-void SceneManager::drawDirtyRect()
+void SceneManager::fillDirtyRect(SceneNode* cur, const SDL_Rect &rect)
 {
-  // TODO: use dirtyinfo to calculate canvas
+  GameObject* obj = cur->obj;
+  SDL_Rect dst = rect;
+  obj->OnFrame();
+  obj->doClip(dst);
+  if (obj->doClip(dst)) {
+    if (!obj->checkCover(rect)) {
+      std::vector<SceneNode*> &son = cur->son;
+      for (int i = 0; i < son.size(); ++i) 
+	fillDirtyRect(son[i], rect);
+    }
+    ScreenLayer::GetInstance()->AddCanvas(obj->canvas2Render(dst));
+  }
 }
 
-void SceneManager::fillDirtyRect()
+void SceneManager::drawDirtyRect()
+{
+  std::vector<SceneNode*> &son = root->son;
+  for (int i = 0; i < DW_WIDTH; ++i) {
+    for (int j = 0; j < DW_HEIGHT; ++j) {
+      if (dirtyinfo[i][j]) {
+	SDL_Rect rect = { dw*i, dh*j, dw, dh };
+	for (int l = 0; l < son.size(); ++l) {
+	  fillDirtyRect(son[l], rect);
+	}
+      }
+    }
+  }
+}
+
+void SceneManager::checkDirtyRect()
 {
   std::vector<GameObject*> activeObj;
-  int next_ti = -1
-  for (int i = 0; i < obj[i].size(); ++i) {
+  Uint32 next_ti = -1;
+  for (int i = 0; i < obj.size(); ++i) {
     LuaObject &handler = obj[i]->handler;
-    int cur_ti;
+    Uint32 cur_ti;
     handler.LoadFrameTime(cur_ti, "query");
     if (cur_ti == -1) continue;
     if (next_ti == -1 || cur_ti < next_ti) {
@@ -112,19 +139,35 @@ void SceneManager::fillDirtyRect()
       activeObj.push_back(obj[i]);
     }
   }
-  
+
   dw = ScreenLayer::GetInstance()->getWidth() / DW_WIDTH;
   dh = ScreenLayer::GetInstance()->getHeight() / DW_HEIGHT;
   memset(dirtyinfo, 0, sizeof(dirtyinfo));
   for (int i = 0; i < activeObj.size(); ++i) {
     LuaObject &handler = activeObj[i]->handler;
     SDL_Rect rect;
+    Uint32 x, y;
     handler.LoadClip(rect, "query");
-    handler.LoadLocation(rect.x, rect.y, "query");
-    for (int l0 = rect.x/dw, l1 = (rect.x+rect.w-1)/dw+1, l = l0; l <= l1; ++l) {
-      for (int k0 = rect.y/dh, k1 = (rect.y+rect.h-1)/dh+1, k = k0; k <= k1; ++k) {
+    handler.LoadLocation(x, y, "query");
+    for (int l0 = x/dw, l1 = (x+rect.w-1)/dw+1, l = l0; l < l1; ++l) {
+      for (int k0 = y/dh, k1 = (y+rect.h-1)/dh+1, k = k0; k < k1; ++k) {
 	dirtyinfo[l][k] = 1;
       }
     }
+    handler.LoadClip(rect, "updata");
+    handler.LoadLocation(x, y, "updata");
+    for (int l0 = x/dw, l1 = (x+rect.w-1)/dw+1, l = l0; l < l1; ++l) {
+      for (int k0 = y/dh, k1 = (y+rect.h-1)/dh+1, k = k0; k < k1; ++k) {
+	dirtyinfo[l][k] = 1;
+      }
+    }    
+  }
+
+  if (next_ti != -1) {
+    for (int i = 0; i < obj.size(); ++i) {
+      LuaObject &handler = obj[i]->handler;
+      handler.LoadFrameTime(next_ti, "updata");
+    }
+    GameSystem::resetFrameTimer(next_ti);
   }
 }

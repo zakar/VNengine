@@ -13,9 +13,9 @@ void EventHandler::initL(lua_State *L) {
 }
 
 void EventHandler::OnFrame() {
-
+  SceneManager::GetInstance()->checkDirtyRect();
   SceneManager::GetInstance()->drawDirtyRect();
-  SceneManager::GetInstance()->fillDirtyRect();
+  ScreenLayer::GetInstance()->FlushCanvas();
 }
 
 void EventHandler::OnScript() {

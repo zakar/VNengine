@@ -22,7 +22,7 @@ TextBox* TextBox::create(int ref) {
   Uint32 width, height, WLoffX, WLoffY, WLwidth, WLheight, fontSize, BoxColor, TextColor;
   std::string imgName, fontName;
   handler.LoadWordLayer(imgName, width, height, BoxColor, TextColor, WLoffX, WLoffY, WLwidth, WLheight, \
-			fontName, fontSize);
+			fontName, fontSize, "query");
 
   if (imgName.empty())
     return new TextBox(width, height, BoxColor, TextColor, fontName.c_str(), fontSize, \
@@ -145,14 +145,11 @@ void TextBox::DrawText()
 }
 
 void TextBox::OnFrame() {
-  handler.LoadLocation(canvas->dst_x, canvas->dst_y);
-  handler.LoadClip(canvas->clip);
-  handler.LoadGlobalAlpha(canvas->global_alpha);
-  handler.LoadColorKey(canvas->color_key);
+  handler.LoadLocation(canvas->dst_x, canvas->dst_y, "query");
+  handler.LoadClip(canvas->clip, "query");
+  handler.LoadGlobalAlpha(canvas->global_alpha, "query");
+  handler.LoadColorKey(canvas->color_key, "query"); 
   DrawText();  
-
-  if (visiable)
-    ScreenLayer::GetInstance()->AddCanvas(canvas);
 }
 
 void TextBox::OnKeyDown(SDLKey key) {
@@ -162,7 +159,7 @@ void TextBox::OnKeyUp(SDLKey key) {
 }
 
 void TextBox::OnMouseDown(Uint16 x, Uint16 y, Uint8 button) {
-  if (!handler.ExecOnMouseRange(x, y))
+  if (!handler.ExecOnMouseRange(x, y, "query"))
     return;
 
   if (button == SDL_BUTTON_LEFT) {

@@ -245,15 +245,16 @@ void LuaObject::LoadFrameTime(Uint32 &ti, const char* cmd)
   
   if (!lua_isfunction(L, 3)) {
     ti = -1;
-    return;
+  } else {
+    lua_pushinteger(L, ti);
+    lua_pushstring(L, cmd);
+    if (lua_pcall(L, 2, 1, 0))
+      puts("cha, the script is Invalid");
+    
+    ti = lua_tointeger(L, 3);
   }
 
-  lua_pushinteger(L, ti);
-  lua_pushstring(L, cmd);
-  if (lua_pcall(L, 2, 1, 0))
-    puts("cha, the script is Invalid");
-
-  ti = lua_tointeger(L, 3);
+  lua_settop(L, 0);
 }
 
 void LuaObject::registerAPI(const std::string &obj) {

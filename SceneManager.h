@@ -32,11 +32,14 @@ class SceneManager
 
   void dirtyInit();
   void drawDirtyRect();
-  void fillDirtyRect();
+  void checkDirtyRect();
 
  public:
   static GameObject *NewObject(SceneNode *cur); 
   std::vector<GameObject*>& GetObjects();
+
+ private: 
+  void fillDirtyRect(SceneNode *root, const SDL_Rect &rect);
 
  private:
   lua_State *L;

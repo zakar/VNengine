@@ -20,7 +20,7 @@ class ScreenLayer
   void AddCanvas(Canvas* obj);
   void FlushCanvas();
 
- public:
+ private:
   SDL_Surface *screen;
   Uint32 width, height;
   
@@ -35,7 +35,7 @@ class ScreenLayer
   void operator=(ScreenLayer&);
 };
 
-inline Uint32 getWidth() { return width; }
-inline Uint32 getHeight() { return height; }
+inline Uint32 ScreenLayer::getWidth() { return width; }
+inline Uint32 ScreenLayer::getHeight() { return height; }
 
 #endif

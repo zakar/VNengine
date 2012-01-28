@@ -27,13 +27,12 @@ LocationFunc.circle = function (r, x, y, det)
 
 		   return function (cmd)
 			     if cmd == 'updata' then
-				dx = math.sin(angle)*r
-				dy = math.cos(angle)*r
 				angle = angle + det
-				return { x = x + dx, y = y + dy }
-			     else 
-				return { x = x, y = y }
 			     end
+			     dx = math.sin(angle)*r
+			     dy = math.cos(angle)*r
+			     
+			     return { x = x + dx, y = y + dy }
 			  end
 		end
 
@@ -55,10 +54,8 @@ ClipFunc.move = function (x, y, w, h, dx, dy)
 			     if cmd == 'updata' then
 				x = x + dx
 				y = y + dy
-				return { x = x, y = y, w = w, h = h }
-			     else
-				return { x = x, y = y, w = w, h = h }
 			     end
+			     return { x = x, y = y, w = w, h = h }
 			  end
 		end
 
@@ -71,28 +68,28 @@ RangeCheckFunc.retangle = function (ux, uy, w, h)
 			  end
 
 
-SceneFunc.GetNextFrameTime = function (t, last_ti)
-				local cur = -1
-				local ti
-				for k, v in pairs(t) do
-				   if type(k) == 'string' and k ~= 'data' then
-				      ti = SceneFunc.GetNextFrameTime(t[k], last_ti)
-				      if ti >= 0 and (cur == -1 or ti < cur) then					 
-					 cur = ti;
-				      end
-				   end
-				end
+-- SceneFunc.GetNextFrameTime = function (t, last_ti)
+-- 				local cur = -1
+-- 				local ti
+-- 				for k, v in pairs(t) do
+-- 				   if type(k) == 'string' and k ~= 'data' then
+-- 				      ti = SceneFunc.GetNextFrameTime(t[k], last_ti)
+-- 				      if ti >= 0 and (cur == -1 or ti < cur) then					 
+-- 					 cur = ti;
+-- 				      end
+-- 				   end
+-- 				end
 				
-				if type(t['data']) == 'table' and type(t['data']['frame_event']) == 'function' then
-				   ti = t['data']['frame_event'](last_ti)
-				   if ti >= 0 and (cur == -1 or ti < cur) then
-				      cur = ti;
-				   end
-				end
+-- 				if type(t['data']) == 'table' and type(t['data']['frame_event']) == 'function' then
+-- 				   ti = t['data']['frame_event'](last_ti)
+-- 				   if ti >= 0 and (cur == -1 or ti < cur) then
+-- 				      cur = ti;
+-- 				   end
+-- 				end
 
-				if cur == -1 then cur = 1000 end
-				return cur
-			     end
+-- 				if cur == -1 then cur = 1000 end
+-- 				return cur
+-- 			     end
 
 
 TimerFunc.FrameTimer = function (interval)
@@ -116,6 +113,7 @@ TimerFunc.ScriptEvent = function (self, ti)
 
 
 TextFunc.text = function (self, text)
+		   print(text)
 		   self:sendtext(text)
 		   WaitFrame(1)
 		end

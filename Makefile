@@ -1,6 +1,6 @@
 CC = g++
 INCLUDE = -I./ -I/usr/include/SDL
-CFLAGS = -O2 $(INCLUDE)
+CFLAGS = -g $(INCLUDE)
 LIBS = -lSDL -lSDL_image -lSDL_ttf -L./ -llua
 TARGET = engine
 
