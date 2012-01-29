@@ -69,7 +69,7 @@ static int remove(lua_State *L) {
   return 0;
 }
 
-static int updata(lua_State *L) {
+static int update(lua_State *L) {
   lua_setfield(L, 1, "data");
   lua_rawgeti(L, 1, 0);
 
@@ -79,7 +79,7 @@ static int updata(lua_State *L) {
 static const luaL_Reg scene_func[] = {
   {"insert", insert}, 
   {"remove", remove},
-  {"updata", updata},
+  {"update", update},
   {NULL, NULL}
 };
 

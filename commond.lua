@@ -21,20 +21,20 @@ end
 
 
 LocationFunc.circle = function (r, x, y, det)
-		   local angle = 0 
-		   local dx
-		   local dy
-
-		   return function (cmd)
-			     if cmd == 'updata' then
-				angle = angle + det
-			     end
-			     dx = math.sin(angle)*r
-			     dy = math.cos(angle)*r
-			     
-			     return { x = x + dx, y = y + dy }
-			  end
-		end
+			 local angle = 0 
+			 local dx
+			 local dy
+			 
+			 return function (cmd)
+				   if cmd == 'update' then
+				      angle = angle + det
+				   end
+				   dx = math.sin(angle)*r
+				   dy = math.cos(angle)*r
+				   
+				   return { x = x + dx, y = y + dy }
+				end
+		      end
 
 LocationFunc.stable = function (x, y)
 			 return function (cmd)
@@ -51,7 +51,7 @@ ClipFunc.stable = function (x, y, w, h)
 
 ClipFunc.move = function (x, y, w, h, dx, dy)
 		   return function (cmd)
-			     if cmd == 'updata' then
+			     if cmd == 'update' then
 				x = x + dx
 				y = y + dy
 			     end
@@ -95,7 +95,7 @@ RangeCheckFunc.retangle = function (ux, uy, w, h)
 TimerFunc.FrameTimer = function (interval)
 			  local current = interval
 			  return function (ti, cmd)
-				    if cmd == 'updata' then
+				    if cmd == 'update' then
 				       current = current - ti
 				       if current <= 0 then 
 					  current = interval 
@@ -113,7 +113,7 @@ TimerFunc.ScriptEvent = function (self, ti)
 
 
 TextFunc.text = function (self, text)
-		   print(text)
+--		   print(text)
 		   self:sendtext(text)
 		   WaitFrame(1)
 		end

@@ -27,7 +27,7 @@ class SceneManager
   void clear(SceneNode *cur);
   void Remove(SceneNode *cur);
   void Insert(SceneNode *fa, SceneNode *cur);
-  void Updata(SceneNode *cur);
+  void Update(SceneNode *cur);
   void SetRoot(SceneNode *root);
 
   void dirtyInit();
@@ -39,7 +39,8 @@ class SceneManager
   std::vector<GameObject*>& GetObjects();
 
  private: 
-  void fillDirtyRect(SceneNode *root, const SDL_Rect &rect);
+  void getDirtyRect(SceneNode *root, const SDL_Rect &rect);
+  void fillDirtyRect(int x, int y, int w, int h);
 
  private:
   lua_State *L;

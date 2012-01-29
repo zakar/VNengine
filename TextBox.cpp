@@ -24,12 +24,14 @@ TextBox* TextBox::create(int ref) {
   handler.LoadWordLayer(imgName, width, height, BoxColor, TextColor, WLoffX, WLoffY, WLwidth, WLheight, \
 			fontName, fontSize, "query");
 
-  if (imgName.empty())
+  if (imgName.empty()) {
     return new TextBox(width, height, BoxColor, TextColor, fontName.c_str(), fontSize, \
 			      WLoffX, WLoffY, WLwidth, WLheight, ref);
-  else 
+  }else {
     return new TextBox(imgName.c_str(), TextColor, fontName.c_str(), fontSize, \
 			      WLoffX, WLoffY, WLwidth, WLheight, ref);
+  }
+
 }
 
 TextBox::TextBox(Uint32 width, Uint32 height, \

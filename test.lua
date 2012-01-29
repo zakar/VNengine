@@ -7,18 +7,19 @@ function frame()
 		   data = {
 		      attribute = 'background',
 		      location = LocationFunc.stable(0, 0), 
-		      clip = ClipFunc.stable(0, 0, 800, 600),
-		      img = 'data/yama.bmp'
+		      clip = ClipFunc.move(1000, 0, 800, 600, -0.5, 0),
+		      img = 'data/yama.bmp',
+		      frame_event = TimerFunc.FrameTimer(200)
 		   }
 		}
 	     )
    
    Scene.bg:insert('hima', --data中每项以table, function 或 string 的形式出现
-		{
+                {
 		   data = {
 		      attribute = 'sprite',
 		      clip = ClipFunc.move(1000, 0, 800, 600, -1, 0),
-		      location = LocationFunc.stable(1, 1),
+		      location = LocationFunc.stable(0, 0),
 		      img = 'data/hima.png',
 		      frame_event = TimerFunc.FrameTimer(200)
 		   }
@@ -29,10 +30,10 @@ function frame()
 		     {
 			data = {
 			   attribute = 'sprite', 
-			   clip = ClipFunc.stable(0, 0, 350, 800),
-			   location = LocationFunc.circle(5, 400, 0, 0.2),
+			   clip = ClipFunc.stable(0, 0, 336, 735),
+			   location = LocationFunc.circle(5, 400, 5, 0.2),
 			   img = 'data/mori.png',
-			   frame_event = TimerFunc.FrameTimer(800)
+			   frame_event = TimerFunc.FrameTimer(200)
 			}
 		     }
 		  )
@@ -41,9 +42,9 @@ function frame()
    			     {
    				data = { 
    				   attribute = 'textbox',
-   				   clip = ClipFunc.stable(0, 0, 800, 600),
+   				   clip = ClipFunc.stable(0, 0, 800, 100),
    				   location = LocationFunc.stable(0, 200),
-   				   frame_event = TimerFunc.FrameTimer(100),
+   				   frame_event = TimerFunc.FrameTimer(200),
 				   
    				   OnMouseRange = RangeCheckFunc.retangle(0, 0, 800, 600),
 				   
@@ -127,9 +128,8 @@ function frame()
 	       data = {
 		  attribute = 'sprite',
 		  clip = ClipFunc.stable(0, 0, 800, 600),  
-		  location = LocationFunc.stable(1, 1),
+		  location = LocationFunc.stable(0, 0),
 		  img = 'data/rogo.bmp',
-		  frame_event = TimerFunc.FrameTimer(280)
 	       }
 	    }
 	 )
@@ -146,37 +146,36 @@ function frame()
 		   data = {
 		      attribute = 'sprite',
 		      clip = ClipFunc.stable(0, 0, 800, 600), 
-		      location = LocationFunc.stable(1, 1),
+		      location = LocationFunc.stable(0, 0),
 		      img = 'data/bg_01a.png',
-		      frame_event = TimerFunc.FrameTimer(280)
 		   }
 		}
 	     )
 
    Scene.bg:insert('maintext',
-		   {
-		      data = { 
-			 attribute = 'textbox',
-			 clip = ClipFunc.stable(0, 0, 800, 600) ,
-			 location = LocationFunc.stable(0,400),
-			 frame_event = TimerFunc.FrameTimer(280),
+   		   {
+   		      data = { 
+   			 attribute = 'textbox',
+   			 clip = ClipFunc.stable(0, 0, 800, 200) ,
+   			 location = LocationFunc.stable(0, 400),
+   			 frame_event = TimerFunc.FrameTimer(100),
 			 
-			 OnMouseRange = RangeCheckFunc.retangle(0, 0, 800, 600),
+   			 OnMouseRange = RangeCheckFunc.retangle(0, 0, 800, 600),
 			 
-			 wordlayer = {
-			    font_name = 'data/simhei.ttf',
-			    font_size = 20,
-			    box = 'data/w_win.bmp',
-			    x = 30,
-			    y = 70,
-			    width = 720,
-			    height = 200,
-			    text_color = 0xff000000
-			 }
-		      }
+   			 wordlayer = {
+   			    font_name = 'data/simhei.ttf',
+   			    font_size = 20,
+   			    box = 'data/w_win.bmp',
+   			    x = 30,
+   			    y = 70,
+   			    width = 720,
+   			    height = 200,
+   			    text_color = 0xff000000
+   			 }
+   		      }
 		      
-		   }
-		)
+   		   }
+   		)
 
    Scene.bg.maintext:text('毫不回首的六小时步行。')
 
@@ -189,7 +188,9 @@ function frame()
    Scene.bg.maintext:text('一整片的黄色，是来自于根本搞不清楚怎么繁茂起来的向日葵花群。')
 
    Scene.bg.maintext:text('山上的风就像是在汲取着盛夏的热气，其爽快感跟就在不久前还黏附在肌肤上的都市大厦风是截然不同的。')
-		
+
+   Scene.bg.maintext:text('我仰头望向高挂天际发出炽热光芒的太阳。')
+
    Suspend()
 end
 

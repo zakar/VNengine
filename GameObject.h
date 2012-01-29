@@ -25,12 +25,13 @@ class GameObject
   //Canvas wrapper
  public:
   bool doClip(SDL_Rect &dst);
-  bool checkCover(const SDL_Rect &dst);
+  bool checkVisible();
   Canvas *canvas2Render(const SDL_Rect &dst);
   
  public:
   LuaObject handler;
   Canvas *canvas;
+  Uint32 visiable;
 };
 
 #endif

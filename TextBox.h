@@ -37,9 +37,6 @@ class TextBox : public GameObject
   void DrawText(); 
 
  public:
-  Uint32 visiable;
-
- public:
   enum PerformState { suspend, running, waiting };
   void SetPerformState(PerformState state);
   PerformState performState; //0等待脚本载入文字，1正在输出文字，2文字输出完毕等待用户继续反应
