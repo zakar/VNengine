@@ -1,14 +1,22 @@
-VNengine (visual novel engine) 是一个非常简单(甚至弱智的)电子小说引擎。目的是试验各种自己学过的东西。。。
+VNengine (visual novel engine) 是一个非常简单电子小说引擎。目的是试验各种自己学过的东西。。。
 
-需要用到图片资源，可通过看test.lua自己修改，若需要向我要。。
 
 REQUIRED:
 ---------
 * SDL 1.2 (http://www.libsdl.org/)
 * lua-5.1.4 (http://www.lua.org/download.html) 
+* 需要用到图片资源，可通过看test.lua自己修改，若需要可向我要。。
 
 INSTALLING:
 -----------
 * "make"编译 (必要时需修改Makefile)
 * 新建文件夹data，将图片资源放到data中
 * "./engine"运行游戏
+
+TODO:
+-----------
+* 最新版本使用脏矩形绘制算法，导致代码整体结构不合理，若要接续开发需重构代码
+* test.lua中一些参数设置不当会导致RTE
+* 内存管理尚没做(-_-)
+* UI, 声音(-_-)
+* 简单图像效果

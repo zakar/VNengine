@@ -45,13 +45,14 @@ void LuaObject::initL(lua_State *L) {
   LuaObject::L = lua_newthread(L);
 }
 
-void LuaObject::LoadClip(SDL_Rect &clip) {
+void LuaObject::LoadClip(SDL_Rect &clip, const char* cmd) {
   lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
   lua_getfield(L, 1, "data");
   lua_getfield(L, 2, "clip");
 
   if (lua_isfunction(L, 3)) {
-    if (lua_pcall(L, 0, 1, 0))
+    lua_pushstring(L, cmd);
+    if (lua_pcall(L, 1, 1, 0))
       puts("cha, the script is Invalid");
   }
 
@@ -69,13 +70,14 @@ void LuaObject::LoadClip(SDL_Rect &clip) {
   lua_settop(L, 0);
 }
 
-void LuaObject::LoadLocation(Uint32 &x, Uint32 &y) {
+void LuaObject::LoadLocation(Uint32 &x, Uint32 &y, const char* cmd) {
   lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
   lua_getfield(L, 1, "data");
   lua_getfield(L, 2, "location");
 
   if (lua_isfunction(L, 3)) {
-    if (lua_pcall(L, 0, 1, 0))
+    lua_pushstring(L, cmd);
+    if (lua_pcall(L, 1, 1, 0))
       puts("cha, the script is Invalid");
   }
 
@@ -89,7 +91,7 @@ void LuaObject::LoadLocation(Uint32 &x, Uint32 &y) {
   lua_settop(L, 0);
 }
 
-void LuaObject::LoadGlobalAlpha(Uint32 &alpha) {
+void LuaObject::LoadGlobalAlpha(Uint32 &alpha, const char* cmd) {
   alpha = 255;
   lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
   lua_getfield(L, 1, "data");
@@ -101,7 +103,8 @@ void LuaObject::LoadGlobalAlpha(Uint32 &alpha) {
   }
 
   if (lua_isfunction(L, 3)) {
-    if (lua_pcall(L, 0, 1, 0))
+    lua_pushstring(L, cmd);
+    if (lua_pcall(L, 1, 1, 0))
       puts("cha, the script is Invalid");
   }
 
@@ -112,7 +115,7 @@ void LuaObject::LoadGlobalAlpha(Uint32 &alpha) {
   lua_settop(L, 0);
 }
 
-void LuaObject::LoadColorKey(Uint32 &color) {
+void LuaObject::LoadColorKey(Uint32 &color, const char* cmd) {
   color = -1;
   lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
   lua_getfield(L, 1, "data");
@@ -124,7 +127,8 @@ void LuaObject::LoadColorKey(Uint32 &color) {
   }
 
   if (lua_isfunction(L, 3)) {
-    if (lua_pcall(L, 0, 1, 0))
+    lua_pushstring(L, cmd);
+    if (lua_pcall(L, 1, 1, 0))
       puts("cha, the script is Invalid");
   }
 
@@ -135,7 +139,7 @@ void LuaObject::LoadColorKey(Uint32 &color) {
   lua_settop(L, 0);
 }
 
-void LuaObject::LoadAttribute(std::string &attr) {
+void LuaObject::LoadAttribute(std::string &attr, const char* cmd) {
   lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
   lua_getfield(L, 1, "data");
   lua_getfield(L, 2, "attribute");
@@ -147,7 +151,7 @@ void LuaObject::LoadAttribute(std::string &attr) {
   lua_settop(L, 0);
 }
 
-void LuaObject::LoadImgName(std::string &img) {
+void LuaObject::LoadImgName(std::string &img, const char* cmd) {
   lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
   lua_getfield(L, 1, "data");
   lua_getfield(L, 2, "img");
@@ -159,24 +163,7 @@ void LuaObject::LoadImgName(std::string &img) {
   lua_settop(L, 0);
 }
 
-int LuaObject::GetFrameInterval(Uint32 last_ti) {
-  lua_getglobal(L, "SceneFunc");
-  lua_getfield(L, 1, "GetNextFrameTime");
-  lua_getglobal(L, "Scene");
-  lua_pushinteger(L, last_ti);
-  
-  if (lua_pcall(L, 2, 1, 0)) 
-    puts("cha, the script is Invalid");
-
-  assert( lua_isnumber(L, 2) );
-
-  int ti = lua_tointeger(L, 2);
-
-  lua_settop(L, 0);
-  return ti;
-}
-
-int LuaObject::ExecOnMouseRange(Uint32 x, Uint32 y) {
+int LuaObject::ExecOnMouseRange(Uint32 x, Uint32 y, const char* cmd) {
   lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
   lua_getfield(L, 1, "data");
   lua_getfield(L, 2, "OnMouseRange");
@@ -185,8 +172,9 @@ int LuaObject::ExecOnMouseRange(Uint32 x, Uint32 y) {
 
   lua_pushinteger(L, (int)x);
   lua_pushinteger(L, (int)y);
-  
-  if (lua_pcall(L, 2, 1, 0))
+
+  lua_pushstring(L, cmd);
+  if (lua_pcall(L, 3, 1, 0))
     puts("cha, the script is Invalid");
 
   assert( lua_isboolean(L, 3) );
@@ -200,7 +188,7 @@ int LuaObject::ExecOnMouseRange(Uint32 x, Uint32 y) {
 
 void LuaObject::LoadWordLayer(std::string &imgName, Uint32 &width, Uint32 &height, Uint32 &BoxColor, Uint32 &TextColor, \
 		   Uint32 &WLoffX, Uint32 &WLoffY, Uint32 &WLwidth, Uint32 &WLheight, \
-		   std::string &fontName, Uint32 &fontSize)
+			      std::string &fontName, Uint32 &fontSize, const char* cmd)
 {
   lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
   lua_getfield(L, 1, "data");
@@ -249,7 +237,29 @@ void LuaObject::LoadWordLayer(std::string &imgName, Uint32 &width, Uint32 &heigh
   lua_settop(L, 0);
 }
 
+void LuaObject::LoadFrameTime(Uint32 &ti, const char* cmd)
+{
+  lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
+  lua_getfield(L, 1, "data");
+  lua_getfield(L, 2, "frame_event");  
+  
+  if (!lua_isfunction(L, 3)) {
+    ti = -1;
+  } else {
+    lua_pushinteger(L, ti);
+    lua_pushstring(L, cmd);
+    if (lua_pcall(L, 2, 1, 0))
+      puts("cha, the script is Invalid");
+    
+    ti = lua_tointeger(L, 3);
+  }
+
+  lua_settop(L, 0);
+}
+
 void LuaObject::registerAPI(const std::string &obj) {
   if (obj == "textbox")
     TextBoxLuaAPI::luaopen_textboxapi(L, ref);
 }
+
+

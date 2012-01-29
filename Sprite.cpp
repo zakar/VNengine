@@ -14,19 +14,17 @@ Sprite::~Sprite() {
 }
 
 void Sprite::OnFrame() {
-  handler.LoadClip(canvas->clip);
-  handler.LoadLocation(canvas->dst_x, canvas->dst_y);
-  handler.LoadColorKey(canvas->color_key);
-  handler.LoadGlobalAlpha(canvas->global_alpha);
+  handler.LoadClip(canvas->clip, "query");
+  handler.LoadLocation(canvas->dst_x, canvas->dst_y, "query");
+  handler.LoadColorKey(canvas->color_key, "query");
+  handler.LoadGlobalAlpha(canvas->global_alpha, "query");
 
   std::string tmp_name;
-  handler.LoadImgName(tmp_name);
+  handler.LoadImgName(tmp_name, "query");
   if (tmp_name != image_name) {
     image_name = tmp_name;
     canvas->LoadImage(image_name.c_str());
   }
-
-  ScreenLayer::GetInstance()->AddCanvas(canvas);
 }
 
 void Sprite::OnKeyDown(SDLKey key) {

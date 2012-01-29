@@ -5,6 +5,9 @@ GameObject::GameObject(int ref):handler(ref) {
 }
 
 GameObject::~GameObject() {
+  if (canvas->surface) {
+    SDL_FreeSurface(canvas->surface);
+  }
   delete canvas;
 }
 
@@ -26,3 +29,26 @@ void GameObject::OnMouseUp(Uint16 x, Uint16 y, Uint8 button) {
 void GameObject::OnMouseMove(Uint16 x, Uint16 y) {
 }
 
+bool GameObject::doClip(SDL_Rect &dst)
+{
+  SDL_Rect rect = { canvas->dst_x, canvas->dst_y, canvas->clip.w, canvas->clip.h };
+  return Canvas::ClipSurface(dst, rect);
+}
+
+Canvas *GameObject::canvas2Render(const SDL_Rect &dst)
+{
+  Canvas* cur = new Canvas;
+  *cur = *canvas;
+  cur->clip.x += dst.x - cur->dst_x;
+  cur->clip.y += dst.y - cur->dst_y;
+  cur->clip.w = dst.w;
+  cur->clip.h = dst.h;
+  cur->dst_x = dst.x;
+  cur->dst_y = dst.y;
+  return cur;
+}
+
+bool GameObject::checkVisible()
+{
+  return visiable;
+}

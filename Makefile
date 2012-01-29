@@ -1,6 +1,6 @@
 CC = g++
 INCLUDE = -I./ -I/usr/include/SDL
-CFLAGS = -g -O2 $(INCLUDE)
+CFLAGS = -g $(INCLUDE)
 LIBS = -lSDL -lSDL_image -lSDL_ttf -L./ -llua
 TARGET = engine
 
@@ -31,4 +31,4 @@ $(TARGET): $(OBJ)
 	$(CC) -o $(TARGET) $(CFLAGS) $(OBJ) $(LIBS) 
 
 clean:
-	-rm $(OBJ)
+	@rm $(OBJ)

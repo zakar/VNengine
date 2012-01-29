@@ -8,9 +8,9 @@ Canvas::Canvas() {
 }
 
 Canvas::~Canvas() {
-  if ( surface ) {
-    SDL_FreeSurface(surface);
-  }
+  // if ( surface ) {
+  //   SDL_FreeSurface(surface);
+  // }
 }
 
 void Canvas::NewSurface(SDL_Surface *&surface, Uint32 width, Uint32 height, Uint32 color) {

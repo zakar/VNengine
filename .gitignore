@@ -1,6 +1,7 @@
 data/*
 old_src/*
 engine
+*.o
 liblua.a
 lua.h
 lualib.h

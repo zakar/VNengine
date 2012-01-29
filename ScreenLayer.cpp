@@ -32,6 +32,7 @@ void ScreenLayer::SetWindowMode( Uint32 width, Uint32 height, bool fullScreen, i
 	mix_canvas.clip.y = 0;
 	mix_canvas.clip.w = width;
 	mix_canvas.clip.h = height;
+	mix_canvas.ColorRect(0xff000000);
 
 	this->width = width;
 	this->height = height;
@@ -55,12 +56,11 @@ void ScreenLayer::AddCanvas(Canvas* obj)
 }
 
 void ScreenLayer::FlushCanvas() 
-{
-  mix_canvas.ColorRect(0xff000000);
-  
+{  
   for (Canvas *obj; !Canvas2blit.empty(); Canvas2blit.pop()) {
     obj = Canvas2blit.front();
     obj->BlendSurface(mix_canvas.surface);
+    delete obj;
   }
 
   mix_canvas.BlendSurface(screen);

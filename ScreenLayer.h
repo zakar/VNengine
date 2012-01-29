@@ -13,15 +13,17 @@ class ScreenLayer
   void SetWindowMode(Uint32 width, Uint32 height, bool fullScreen = false, int bpp=32);
   void SetTitle(const char* title);
   void Release();
+  Uint32 getWidth();
+  Uint32 getHeight();
 
  public:
   void AddCanvas(Canvas* obj);
   void FlushCanvas();
 
- public:
+ private:
   SDL_Surface *screen;
   Uint32 width, height;
-
+  
  public: //与全局屏幕相关的数据
   Canvas mix_canvas;
 
@@ -32,5 +34,8 @@ class ScreenLayer
   ScreenLayer();
   void operator=(ScreenLayer&);
 };
+
+inline Uint32 ScreenLayer::getWidth() { return width; }
+inline Uint32 ScreenLayer::getHeight() { return height; }
 
 #endif

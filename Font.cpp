@@ -69,8 +69,9 @@ void Font::DrawTextShaded( const Uint16* text, Uint32 color, Uint32 shadowColor,
 void Font::DrawTextBlended( const Uint16* text, Uint32 color, SDL_Surface* dst_sur, Uint32 x, Uint32 y ) {
 	SDL_Surface *sur;
 	sur = TTF_RenderUNICODE_Blended(font, text, Conv2SDLcolor(color));
-	if (sur == 0) 
-		throw Exception("Failed Drawing Text Blended");
+	if (sur == 0) {
+	  throw Exception("Failed Drawing Text Blended");
+	}
 
 	SDL_Rect src, dst;
 	src.x = src.y = 0;

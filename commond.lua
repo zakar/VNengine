@@ -1,14 +1,13 @@
 function getFrame(fun)
    local func = coroutine.create(fun)
    return function ()
-	     state = coroutine.resume(func)
+	     local state = coroutine.resume(func)
 	     return state
 	  end
 end
 
 function Suspend()
    while true do
-      print('here')
       coroutine.yield()
    end
 end
@@ -22,28 +21,40 @@ end
 
 
 LocationFunc.circle = function (r, x, y, det)
-		   local angle = 0 
-		   local dx
-		   local dy
+			 local angle = 0 
+			 local dx
+			 local dy
+			 
+			 return function (cmd)
+				   if cmd == 'update' then
+				      angle = angle + det
+				   end
+				   dx = math.sin(angle)*r
+				   dy = math.cos(angle)*r
+				   
+				   return { x = x + dx, y = y + dy }
+				end
+		      end
 
-		   return function ()
-			     dx = math.sin(angle)*r
-			     dy = math.cos(angle)*r
-			     angle = angle + det
-			     return {x = x + dx, y = y + dy}
-			  end
-		end
+LocationFunc.stable = function (x, y)
+			 return function (cmd)
+				   return { x = x, y = y }
+				end
+		      end
 
-LocationFunc.none = function ()
-		 return nil
-	      end
-
+ClipFunc.stable = function (x, y, w, h)
+		     return function (cmd)
+			       return { x = x, y = y, w = w, h = h }
+			    end
+		  end
 
 
 ClipFunc.move = function (x, y, w, h, dx, dy)
-		   return function ()
-			     x = x + dx
-			     y = y + dy
+		   return function (cmd)
+			     if cmd == 'update' then
+				x = x + dx
+				y = y + dy
+			     end
 			     return { x = x, y = y, w = w, h = h }
 			  end
 		end
@@ -57,34 +68,39 @@ RangeCheckFunc.retangle = function (ux, uy, w, h)
 			  end
 
 
-SceneFunc.GetNextFrameTime = function (t, last_ti)
-				cur = -1
-				for k, v in pairs(t) do
-				   if type(k) == 'string' and k ~= 'data' then
-				      ti = SceneFunc.GetNextFrameTime(t[k], last_ti)
-				      if ti >= 0 and (cur == -1 or ti < cur) then					 
-					 cur = ti;
-				      end
-				   end
-				end
+-- SceneFunc.GetNextFrameTime = function (t, last_ti)
+-- 				local cur = -1
+-- 				local ti
+-- 				for k, v in pairs(t) do
+-- 				   if type(k) == 'string' and k ~= 'data' then
+-- 				      ti = SceneFunc.GetNextFrameTime(t[k], last_ti)
+-- 				      if ti >= 0 and (cur == -1 or ti < cur) then					 
+-- 					 cur = ti;
+-- 				      end
+-- 				   end
+-- 				end
 				
-				if type(t['data']) == 'table' and type(t['data']['frame_event']) == 'function' then
-				   ti = t['data']['frame_event'](last_ti)
-				   if ti >= 0 and (cur == -1 or ti < cur) then
-				      cur = ti;
-				   end
-				end
+-- 				if type(t['data']) == 'table' and type(t['data']['frame_event']) == 'function' then
+-- 				   ti = t['data']['frame_event'](last_ti)
+-- 				   if ti >= 0 and (cur == -1 or ti < cur) then
+-- 				      cur = ti;
+-- 				   end
+-- 				end
 
-				if cur == -1 then cur = 100 end
-				return cur
-			     end
+-- 				if cur == -1 then cur = 1000 end
+-- 				return cur
+-- 			     end
 
 
 TimerFunc.FrameTimer = function (interval)
-			  current = interval
-			  return function (ti)
-				    current = current - ti
-				    if current <= 0 then current = interval end
+			  local current = interval
+			  return function (ti, cmd)
+				    if cmd == 'update' then
+				       current = current - ti
+				       if current <= 0 then 
+					  current = interval 
+				       end
+				    end
 				    return current
 				 end
 		       end
@@ -97,6 +113,7 @@ TimerFunc.ScriptEvent = function (self, ti)
 
 
 TextFunc.text = function (self, text)
+--		   print(text)
 		   self:sendtext(text)
 		   WaitFrame(1)
 		end

@@ -22,12 +22,16 @@ class GameObject
   virtual void OnMouseUp(Uint16 x, Uint16 y, Uint8 button);
   virtual void OnMouseMove(Uint16 x, Uint16 y);
   
+  //Canvas wrapper
  public:
-  Canvas* get_canvas() { return canvas; }
-
+  bool doClip(SDL_Rect &dst);
+  bool checkVisible();
+  Canvas *canvas2Render(const SDL_Rect &dst);
+  
  public:
   LuaObject handler;
   Canvas *canvas;
+  Uint32 visiable;
 };
 
 #endif

@@ -24,7 +24,6 @@ class EventHandler
   void OnMouseMove(Uint16 x, Uint16 y);
 
  private:
-  std::vector<GameObject*> obj;
   lua_State *L;
 };
 
