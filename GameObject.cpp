@@ -2,6 +2,7 @@
 
 GameObject::GameObject(int ref):handler(ref) {
   canvas = new Canvas;
+  visiable = 1;
 }
 
 GameObject::~GameObject() {
