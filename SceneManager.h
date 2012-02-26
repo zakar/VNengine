@@ -13,6 +13,7 @@ extern "C" {
 #include <algorithm>
 
 #include "SceneNode.h"
+#include "Font.h"
 
 const int DW_WIDTH = 20;
 const int DW_HEIGHT = 20;
@@ -30,9 +31,14 @@ class SceneManager
   void Update(SceneNode *cur);
   void SetRoot(SceneNode *root);
 
-  void dirtyInit();
   void drawDirtyRect();
-  void checkDirtyRect();
+  void checkActiveObject();
+
+  //
+  void createBulletText(const char* text, Uint32 color);
+  void setBulletTextSpeed(Uint32 speed);
+  void setBulletTextFont(const char* face, Uint32 size);
+  //
 
  public:
   static GameObject *NewObject(SceneNode *cur); 
@@ -40,12 +46,20 @@ class SceneManager
 
  private: 
   void getDirtyRect(SceneNode *root, const SDL_Rect &rect);
-  void fillDirtyRect(int x, int y, int w, int h);
+  void fillDirtyRect(Uint32 x, Uint32 y, Uint32 w, Uint32 h);
 
  private:
   lua_State *L;
   SceneNode *root;
   std::vector<GameObject*> obj;
+  std::vector<GameObject*> activeObj;
+
+  //
+  std::vector<Canvas*> bulletText;
+  Font *font;
+  Uint32 bulletTextSpeed;
+  Uint32 bulletTextWait;
+  //
   
   int dw, dh;
   int dirtyinfo[DW_WIDTH][DW_HEIGHT];

@@ -15,6 +15,8 @@ public:
 	void DrawTextBlended(const Uint16* text, Uint32 color, SDL_Surface* dst_sur, Uint32 x, Uint32 y);
 	void GetTextSize(const Uint16* text, Uint32 &height, Uint32 &width);
 
+	SDL_Surface* createTextSurface(const Uint16* text, Uint32 color);
+
 	static SDL_Color Conv2SDLcolor(Uint32 color);
 
 private:

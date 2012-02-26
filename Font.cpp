@@ -105,3 +105,30 @@ SDL_Color Font::Conv2SDLcolor(Uint32 color) {
   sdl_color.b = Uint8((color & BMASK) >> BSHIFT);
   return sdl_color;
 }
+
+SDL_Surface* Font::createTextSurface(const Uint16* text, Uint32 color)
+{ 
+  SDL_Surface *sur = NULL, *dst_sur = NULL;
+  sur = TTF_RenderUNICODE_Solid(font, text, Conv2SDLcolor(color));
+  if (sur == NULL) 
+    throw Exception("Failed Drawing Text Solid");
+
+  return sur;
+  // Canvas::NewSurface(dst_sur, sur->w, sur->h, 0xffffffff);
+
+  // SDL_Rect src, dst;
+  // src.x = src.y = 0;
+  // src.w = sur->w;
+  // src.h = sur->h;
+  
+  // dst.x = 0;
+  // dst.y = 0;
+  // dst.w = sur->w;
+  // dst.h = sur->h;
+  
+  // SDL_BlitSurface(sur, &src, dst_sur, &dst);
+  
+  // SDL_FreeSurface(sur);
+  
+  // return dst_sur;
+}

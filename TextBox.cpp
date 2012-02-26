@@ -168,7 +168,7 @@ void TextBox::OnMouseDown(Uint16 x, Uint16 y, Uint8 button) {
     switch (performState) {
     case suspend:
       Clear();
-      GameSystem::resetScriptTimer(0);
+      GameSystem::resetTimer(0, SCRIPT_EVENT);
       break;
     case running: 
       while (performState == running) DrawText();

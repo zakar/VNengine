@@ -17,6 +17,7 @@ class EventHandler
  public:
   void OnFrame();
   void OnScript();
+  void OnNetwork();
   void OnKeyDown(SDLKey key);
   void OnKeyUp(SDLKey key);
   void OnMouseDown(Uint16 x, Uint16 y, Uint8 button);

@@ -1,15 +1,15 @@
-Scene = SceneManager.create() --每个scene均设metatable的__index，所有的类函数放__index
+local Scene = SceneManager.create() --每个scene均设metatable的__index，所有的类函数放__index
 
-function frame()
+local function test_chapter()
 
    Scene:insert('bg',
 		{
 		   data = {
-		      attribute = 'background',
+		      attribute = 'sprite',
 		      location = LocationFunc.stable(0, 0), 
 		      clip = ClipFunc.move(1000, 0, 800, 600, -0.5, 0),
 		      img = 'data/yama.bmp',
-		      frame_event = TimerFunc.FrameTimer(200)
+--		      frame_event = TimerFunc.FrameTimer(200)
 		   }
 		}
 	     )
@@ -21,7 +21,7 @@ function frame()
 		      clip = ClipFunc.move(1000, 0, 800, 600, -1, 0),
 		      location = LocationFunc.stable(0, 0),
 		      img = 'data/hima.png',
-		      frame_event = TimerFunc.FrameTimer(200)
+		      frame_event = TimerFunc.FrameTimer(100)
 		   }
 		}
 	     )
@@ -33,7 +33,7 @@ function frame()
 			   clip = ClipFunc.stable(0, 0, 336, 735),
 			   location = LocationFunc.circle(5, 400, 5, 0.2),
 			   img = 'data/mori.png',
-			   frame_event = TimerFunc.FrameTimer(200)
+			   frame_event = TimerFunc.FrameTimer(100)
 			}
 		     }
 		  )
@@ -44,7 +44,7 @@ function frame()
    				   attribute = 'textbox',
    				   clip = ClipFunc.stable(0, 0, 800, 100),
    				   location = LocationFunc.stable(0, 200),
-   				   frame_event = TimerFunc.FrameTimer(200),
+   				   frame_event = TimerFunc.FrameTimer(100),
 				   
    				   OnMouseRange = RangeCheckFunc.retangle(0, 0, 800, 600),
 				   
@@ -194,5 +194,36 @@ function frame()
    Suspend()
 end
 
-Script = getFrame(frame)
+local function bullet_server()
+   local bulletServer = Scene.bulletServer
+   local print = print
+   local table = table
+   local socket = require('socket')
+   local server = socket.bind('*', 0)
+   local client = {}
+   local ip, port = server:getsockname()
+   print('The ip and port of bullet_server is ', ip, port)
 
+   bulletServer.setBulletTextSpeed(1)
+   bulletServer.setBulletTextFont('data/simhei.ttf', 30)
+
+   server:settimeout(0.01)
+   while 1 do
+      local remote, err = server:accept()
+      if remote then
+	 remote:settimeout(0.01)
+	 table.insert(client, remote)
+      end
+      local active = socket.select(client, nil, 0.01)
+      if active then
+	 for i = 1, #active do
+	    local msg = active[i]:receive()
+	    bulletServer.createBulletText(msg, 0xffffffff)
+	 end
+      end
+      WaitFrame(1)
+   end
+end
+
+Script = subRoutine(test_chapter)
+Server = subRoutine(bullet_server)

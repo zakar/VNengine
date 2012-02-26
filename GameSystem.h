@@ -9,8 +9,9 @@ extern "C" {
   #include "lauxlib.h"
 }
 
-#define FRAME_EVENT  SDL_USEREVENT
-#define SCRIPT_EVENT SDL_USEREVENT+1
+const Uint32 FRAME_EVENT = SDL_USEREVENT;
+const Uint32 SCRIPT_EVENT = SDL_USEREVENT+1;
+const Uint32 NETWORK_EVENT = SDL_USEREVENT+2;
 
 class GameSystem
 {
@@ -25,12 +26,12 @@ public:
 	void Release();
 
 public:
-	static void resetFrameTimer(int ti);
-	static void resetScriptTimer(int ti);
+	static void resetTimer(int ti, Uint32 type);
 
 public:
 	static Uint32 frame_event_interval;
 	static Uint32 script_event_interval;
+	static Uint32 network_event_interval;
 
 private:
 	lua_State *L; //脚本机的主线程

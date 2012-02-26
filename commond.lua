@@ -1,4 +1,13 @@
-function getFrame(fun)
+LocationFunc = {}
+ClipFunc = {}
+RangeCheckFunc = {}
+SceneFunc = {}
+TimerFunc = {}
+TextFunc = {}
+
+local coroutine = coroutine
+
+function subRoutine(fun)
    local func = coroutine.create(fun)
    return function ()
 	     local state = coroutine.resume(func)
@@ -67,31 +76,6 @@ RangeCheckFunc.retangle = function (ux, uy, w, h)
 				    end
 			  end
 
-
--- SceneFunc.GetNextFrameTime = function (t, last_ti)
--- 				local cur = -1
--- 				local ti
--- 				for k, v in pairs(t) do
--- 				   if type(k) == 'string' and k ~= 'data' then
--- 				      ti = SceneFunc.GetNextFrameTime(t[k], last_ti)
--- 				      if ti >= 0 and (cur == -1 or ti < cur) then					 
--- 					 cur = ti;
--- 				      end
--- 				   end
--- 				end
-				
--- 				if type(t['data']) == 'table' and type(t['data']['frame_event']) == 'function' then
--- 				   ti = t['data']['frame_event'](last_ti)
--- 				   if ti >= 0 and (cur == -1 or ti < cur) then
--- 				      cur = ti;
--- 				   end
--- 				end
-
--- 				if cur == -1 then cur = 1000 end
--- 				return cur
--- 			     end
-
-
 TimerFunc.FrameTimer = function (interval)
 			  local current = interval
 			  return function (ti, cmd)
@@ -113,7 +97,6 @@ TimerFunc.ScriptEvent = function (self, ti)
 
 
 TextFunc.text = function (self, text)
---		   print(text)
 		   self:sendtext(text)
 		   WaitFrame(1)
 		end

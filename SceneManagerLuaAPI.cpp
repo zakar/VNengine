@@ -76,6 +76,38 @@ static int update(lua_State *L) {
   return 0;
 }
 
+//bulletText lua API
+static int setBulletTextSpeed(lua_State *L)
+{
+  int speed = lua_tointeger(L, -1);
+  SceneManager::GetInstance()->setBulletTextSpeed(speed);
+  return 0;
+}
+
+static int setBulletTextFont(lua_State *L)
+{
+  const char* face = lua_tostring(L, -2);
+  Uint32 size = lua_tointeger(L, -1);
+  SceneManager::GetInstance()->setBulletTextFont(face, size);
+  return 0;
+}
+
+static int createBulletText(lua_State *L)
+{
+  const char* text = lua_tostring(L, -2);
+  Uint32 color = lua_tointeger(L, -1);
+  SceneManager::GetInstance()->createBulletText(text, color);
+  return 0;
+}
+
+static const luaL_Reg bulletText_func[] = {
+  {"setBulletTextSpeed", setBulletTextSpeed},
+  {"setBulletTextFont", setBulletTextFont},
+  {"createBulletText", createBulletText},
+  {NULL, NULL}
+};
+//
+
 static const luaL_Reg scene_func[] = {
   {"insert", insert}, 
   {"remove", remove},
@@ -107,6 +139,9 @@ static const luaL_Reg scene_manager_func[] = {
 void SceneManagerLuaAPI::luaopen_scene(lua_State *L) {
   luaL_newmetatable(L, "SceneMetatable");
   lua_newtable(L);
+  lua_newtable(L);
+  luaL_register(L, NULL, bulletText_func);
+  lua_setfield(L, 2, "bulletServer");
   luaL_register(L, NULL, scene_func);
   lua_setfield(L, 1, "__index");
   lua_pop(L, 1);

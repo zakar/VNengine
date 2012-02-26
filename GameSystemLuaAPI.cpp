@@ -3,7 +3,7 @@
 
 static int resetScriptEvent(lua_State *L) {
   int ti = lua_tointeger(L, 1);
-  GameSystem::resetScriptTimer(ti);
+  GameSystem::resetTimer(ti, SCRIPT_EVENT);
   return 0;
 }
 

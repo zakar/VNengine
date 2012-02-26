@@ -1,4 +1,5 @@
 #include "EventHandler.h"
+#include "GameSystem.h"
 #include "ScreenLayer.h"
 #include "SceneManager.h"
 #include "LuaObject.h"
@@ -13,17 +14,24 @@ void EventHandler::initL(lua_State *L) {
 }
 
 void EventHandler::OnFrame() {
-  SceneManager::GetInstance()->checkDirtyRect();
+  SceneManager::GetInstance()->checkActiveObject();
   SceneManager::GetInstance()->drawDirtyRect();
   ScreenLayer::GetInstance()->FlushCanvas();
 }
 
 void EventHandler::OnScript() {
-
   lua_getglobal(L, "Script");
   if (lua_pcall(L, 0, 0, 0)) 
     throw Exception("cha, Script is corrupt");
   lua_settop(L, 0);
+}
+
+void EventHandler::OnNetwork() {
+  lua_getglobal(L, "Server");
+  if (lua_pcall(L, 0, 0, 0))
+    throw Exception("cha, Script is corrupt");
+  lua_settop(L, 0);
+  GameSystem::resetTimer(1, NETWORK_EVENT);
 }
 
 void EventHandler::OnKeyDown(SDLKey key) {

@@ -21,10 +21,9 @@ void Sprite::OnFrame() {
 
   std::string tmp_name;
   handler.LoadImgName(tmp_name, "query");
-  if (tmp_name != image_name) {
-    image_name = tmp_name;
-    canvas->LoadImage(image_name.c_str());
-  }
+  if (tmp_name == image_name) return;
+  image_name = tmp_name;
+  canvas->LoadImage(image_name.c_str());
 }
 
 void Sprite::OnKeyDown(SDLKey key) {
