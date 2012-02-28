@@ -6,7 +6,8 @@
 
 class Font {
 public:
-	Font(const char* face, Uint32 size);
+        static Font* GetInstance();
+	void FontInit(const char* face, Uint32 size);
 	~Font();
 
 public:
@@ -20,7 +21,8 @@ public:
 	static SDL_Color Conv2SDLcolor(Uint32 color);
 
 private:
-	TTF_Font* font;
+	Font();
+	TTF_Font *font;
 	static Uint32 refCount;
 };
 

@@ -10,7 +10,6 @@
 
 SceneManager::SceneManager() {
   memset(dirtyinfo, 0, sizeof(dirtyinfo));
-  font = NULL;
 }
 
 SceneManager::~SceneManager() {
@@ -84,7 +83,6 @@ void SceneManager::Update(SceneNode *cur) {
 void SceneManager::Release() {
   clear(root);
   obj.clear();
-  if (font) delete font;
 }
 
 void SceneManager::SetRoot(SceneNode *root) {
@@ -231,7 +229,7 @@ void SceneManager::createBulletText(const char* text, Uint32 color)
 {
   std::basic_string<Uint16> utext = Helper::GetUTF16(text);
   Canvas *bt = new Canvas;
-  bt->surface = font->createTextSurface(utext.c_str(), color);
+  bt->surface = Font::GetInstance()->createTextSurface(utext.c_str(), color);
   bt->dst_x = ScreenLayer::GetInstance()->getWidth();
   bt->dst_y = 20; //magic number ?
   bt->clip.x = 0;
@@ -248,11 +246,4 @@ void SceneManager::setBulletTextSpeed(Uint32 speed)
   bulletTextSpeed = speed;
   bulletTextWait = speed;
 }
-
-void SceneManager::setBulletTextFont(const char* face, Uint32 size)
-{
-  if (font) delete font;
-  font = new Font(face, size);
-}
-
 

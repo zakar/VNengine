@@ -76,19 +76,18 @@ static int update(lua_State *L) {
   return 0;
 }
 
+static const luaL_Reg scene_func[] = {
+  {"insert", insert}, 
+  {"remove", remove},
+  {"update", update},
+  {NULL, NULL}
+};
+
 //bulletText lua API
 static int setBulletTextSpeed(lua_State *L)
 {
   int speed = lua_tointeger(L, -1);
   SceneManager::GetInstance()->setBulletTextSpeed(speed);
-  return 0;
-}
-
-static int setBulletTextFont(lua_State *L)
-{
-  const char* face = lua_tostring(L, -2);
-  Uint32 size = lua_tointeger(L, -1);
-  SceneManager::GetInstance()->setBulletTextFont(face, size);
   return 0;
 }
 
@@ -102,18 +101,25 @@ static int createBulletText(lua_State *L)
 
 static const luaL_Reg bulletText_func[] = {
   {"setBulletTextSpeed", setBulletTextSpeed},
-  {"setBulletTextFont", setBulletTextFont},
   {"createBulletText", createBulletText},
   {NULL, NULL}
 };
 //
 
-static const luaL_Reg scene_func[] = {
-  {"insert", insert}, 
-  {"remove", remove},
-  {"update", update},
+// setting tool
+static int setFont(lua_State *L)
+{
+  const char* face = lua_tostring(L, -2);
+  Uint32 size = lua_tointeger(L, -1);
+  Font::GetInstance()->FontInit(face, size);
+  return 0;
+}
+
+static const luaL_Reg setting_func[] = {
+  {"setFont", setFont},
   {NULL, NULL}
 };
+//
 
 static int create(lua_State *L) {
   lua_newtable(L);
@@ -142,6 +148,9 @@ void SceneManagerLuaAPI::luaopen_scene(lua_State *L) {
   lua_newtable(L);
   luaL_register(L, NULL, bulletText_func);
   lua_setfield(L, 2, "bulletServer");
+  lua_newtable(L);
+  luaL_register(L, NULL, setting_func);
+  lua_setfield(L, 2, "Setting");
   luaL_register(L, NULL, scene_func);
   lua_setfield(L, 1, "__index");
   lua_pop(L, 1);

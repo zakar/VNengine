@@ -37,7 +37,6 @@ class SceneManager
   //
   void createBulletText(const char* text, Uint32 color);
   void setBulletTextSpeed(Uint32 speed);
-  void setBulletTextFont(const char* face, Uint32 size);
   //
 
  public:
@@ -56,7 +55,6 @@ class SceneManager
 
   //
   std::vector<Canvas*> bulletText;
-  Font *font;
   Uint32 bulletTextSpeed;
   Uint32 bulletTextWait;
   //

@@ -1,4 +1,5 @@
 local Scene = SceneManager.create() --每个scene均设metatable的__index，所有的类函数放__index
+Scene.Setting.setFont('data/simhei.ttf', 20)
 
 local function test_chapter()
 
@@ -9,7 +10,7 @@ local function test_chapter()
 		      location = LocationFunc.stable(0, 0), 
 		      clip = ClipFunc.move(1000, 0, 800, 600, -0.5, 0),
 		      img = 'data/yama.bmp',
---		      frame_event = TimerFunc.FrameTimer(200)
+		      frame_event = TimerFunc.FrameTimer(200)
 		   }
 		}
 	     )
@@ -205,7 +206,6 @@ local function bullet_server()
    print('The ip and port of bullet_server is ', ip, port)
 
    bulletServer.setBulletTextSpeed(1)
-   bulletServer.setBulletTextFont('data/simhei.ttf', 30)
 
    server:settimeout(0.01)
    while 1 do

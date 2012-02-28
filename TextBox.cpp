@@ -19,26 +19,26 @@ TextBox* TextBox::create(int ref) {
   LuaObject handler(ref);
   handler.registerAPI(std::string("textbox"));
 
+  //font is not used, but remain here
   Uint32 width, height, WLoffX, WLoffY, WLwidth, WLheight, fontSize, BoxColor, TextColor;
   std::string imgName, fontName;
   handler.LoadWordLayer(imgName, width, height, BoxColor, TextColor, WLoffX, WLoffY, WLwidth, WLheight, \
 			fontName, fontSize, "query");
 
   if (imgName.empty()) {
-    return new TextBox(width, height, BoxColor, TextColor, fontName.c_str(), fontSize, \
+    return new TextBox(width, height, BoxColor, TextColor, \
 			      WLoffX, WLoffY, WLwidth, WLheight, ref);
   }else {
-    return new TextBox(imgName.c_str(), TextColor, fontName.c_str(), fontSize, \
+    return new TextBox(imgName.c_str(), TextColor, \
 			      WLoffX, WLoffY, WLwidth, WLheight, ref);
   }
 
 }
 
 TextBox::TextBox(Uint32 width, Uint32 height, \
-		 Uint32 BoxColor, Uint32 TextColor, const char* fontName, Uint32 fontSize, \
+		 Uint32 BoxColor, Uint32 TextColor, \
 		 Uint32 WLoffX, Uint32 WLoffY, Uint32 WLwidth, Uint32 WLheight, int ref)
   : GameObject(ref), 
-    font(fontName, fontSize), 
     TextColor(TextColor),
     WLoffX(WLoffX),
     WLoffY(WLoffY),
@@ -49,16 +49,15 @@ TextBox::TextBox(Uint32 width, Uint32 height, \
   Canvas::NewSurface(cleanlayer = NULL, WLwidth, WLheight, BoxColor);
   SDL_SetAlpha(cleanlayer, 0, 255);
 
-  font.GetTextSize(CHN, wordH, wordW);
+  Font::GetInstance()->GetTextSize(CHN, wordH, wordW);
   SetDrawInterval(DEFAULT_DRAW_INTERVAL);
   SetPerformState(suspend);
 }
 
 TextBox::TextBox(const char* imageName, \
-		 Uint32 TextColor, const char* fontName, Uint32 fontSize, \
+		 Uint32 TextColor, \
 		 Uint32 WLoffX, Uint32 WLoffY, Uint32 WLwidth, Uint32 WLheight, int ref)
   : GameObject(ref),
-    font(fontName, fontSize), 
     TextColor(TextColor),
     WLoffX(WLoffX),
     WLoffY(WLoffY),
@@ -73,7 +72,7 @@ TextBox::TextBox(const char* imageName, \
   SDL_SetAlpha(canvas->surface, SDL_SRCALPHA, 255);
   SDL_SetAlpha(cleanlayer, 0, 255);
 
-  font.GetTextSize(CHN, wordH, wordW);
+  Font::GetInstance()->GetTextSize(CHN, wordH, wordW);
   SetDrawInterval(DEFAULT_DRAW_INTERVAL);
   SetPerformState(suspend);
 }
@@ -112,7 +111,7 @@ void TextBox::ProcessWord(Uint16 word)
 
   if (nowY + wordH > WLheight) return;
   
-  font.DrawTextBlended(str, TextColor, canvas->surface, nowX, nowY);
+  Font::GetInstance()->DrawTextBlended(str, TextColor, canvas->surface, nowX, nowY);
   nowX += wordW + WIDTH_DELTA;
 }
 

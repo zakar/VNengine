@@ -4,16 +4,28 @@
 
 Uint32 Font::refCount = 0;
 
-Font::Font( const char* face, Uint32 size ) {
+Font* Font::GetInstance()
+{
+  static Font* instance = new Font();
+  return instance;
+}
+
+void Font::FontInit(const char* face, Uint32 size)
+{
+  font = TTF_OpenFont(face, size);  
+  if (font == 0)
+    throw Exception(SDL_GetError());
+
+}
+
+Font::Font() {
 	if (!refCount) {
 		if ( TTF_Init() < 0 )
 			throw Exception("TTF_Init() failed!");
 	}
 
-	font = TTF_OpenFont(face, size);
-	if (font == 0)
-		throw Exception(SDL_GetError());
-	++refCount;
+	if (++refCount > 1) 
+	  throw Exception("Mutiply Font instance");
 }
 
 Font::~Font(){
@@ -89,10 +101,10 @@ void Font::DrawTextBlended( const Uint16* text, Uint32 color, SDL_Surface* dst_s
 }
 
 void Font::GetTextSize( const Uint16* text, Uint32 &height, Uint32 &width ) {
-	static SDL_Color color;
-	SDL_Surface * sur = TTF_RenderUNICODE_Shaded(font, text, color, color);
+        SDL_Color color = {0};
+	SDL_Surface *sur = TTF_RenderUNICODE_Blended(font, text, color);
 	if (sur == 0) 
-		throw Exception("Failed Calc Text Size");
+	  throw Exception("Failed Calc Text Size");
 	height = sur->h;
 	width  = sur->w;
 	SDL_FreeSurface(sur);
@@ -108,27 +120,12 @@ SDL_Color Font::Conv2SDLcolor(Uint32 color) {
 
 SDL_Surface* Font::createTextSurface(const Uint16* text, Uint32 color)
 { 
-  SDL_Surface *sur = NULL, *dst_sur = NULL;
-  sur = TTF_RenderUNICODE_Solid(font, text, Conv2SDLcolor(color));
-  if (sur == NULL) 
-    throw Exception("Failed Drawing Text Solid");
-
+  Uint32 h, w;
+  GetTextSize(text, h, w);
+  SDL_Surface *sur = NULL;
+  Canvas::NewSurface(sur, w, h, 0xff000000);
+  if (sur == NULL)
+    throw Exception("Failed new surface");
+  DrawTextBlended(text, color, sur, 0, 0);
   return sur;
-  // Canvas::NewSurface(dst_sur, sur->w, sur->h, 0xffffffff);
-
-  // SDL_Rect src, dst;
-  // src.x = src.y = 0;
-  // src.w = sur->w;
-  // src.h = sur->h;
-  
-  // dst.x = 0;
-  // dst.y = 0;
-  // dst.w = sur->w;
-  // dst.h = sur->h;
-  
-  // SDL_BlitSurface(sur, &src, dst_sur, &dst);
-  
-  // SDL_FreeSurface(sur);
-  
-  // return dst_sur;
 }
