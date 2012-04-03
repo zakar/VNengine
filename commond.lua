@@ -51,6 +51,18 @@ LocationFunc.stable = function (x, y)
 				end
 		      end
 
+LocationFunc.move = function (x, y, dx, dy, ax, ay) 
+		       return function (cmd)
+				 if (dx ~= 0 or dy ~= 0) and cmd == 'update' then
+				    x = x + dx
+				    y = y + dy
+				    dx = dx + ax
+				    dy = dy + ay
+				 end
+				 return { x = x, y = y }
+			      end
+		    end
+
 ClipFunc.stable = function (x, y, w, h)
 		     return function (cmd)
 			       return { x = x, y = y, w = w, h = h }
@@ -58,11 +70,13 @@ ClipFunc.stable = function (x, y, w, h)
 		  end
 
 
-ClipFunc.move = function (x, y, w, h, dx, dy)
+ClipFunc.move = function (x, y, w, h, dx, dy, ax, ay)
 		   return function (cmd)
-			     if cmd == 'update' then
+			     if (dx ~= 0 or dy ~= 0) and cmd == 'update' then
 				x = x + dx
 				y = y + dy
+				dx = dx + ax
+				dy = dy + ay
 			     end
 			     return { x = x, y = y, w = w, h = h }
 			  end
@@ -93,10 +107,15 @@ TimerFunc.ScriptEvent = function (self, ti)
 			   self.resetScriptEvent(ti)
 			   WaitFrame(1)
 			end
-
-
+TimerFunc.FrameEvent = function (self, ti)
+			 self.resetFrameEvent(ti)
+		      end
 
 TextFunc.text = function (self, text)
 		   self:sendtext(text)
 		   WaitFrame(1)
 		end
+
+TextFunc.FLIP = 0
+TextFunc.SET = 1
+TextFunc.UNSET = 2

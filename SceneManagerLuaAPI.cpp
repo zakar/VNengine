@@ -50,6 +50,28 @@ static int insert(lua_State *L) {
   return 0;
 }
 
+static int move(lua_State *L) {
+  lua_pushvalue(L, 3);
+  lua_gettable(L, 2);
+  lua_rawgeti(L, -1, 0);
+  SceneNode* src = (SceneNode*)lua_touserdata(L, -1);
+  lua_pop(L, 2);
+
+  lua_pushvalue(L, 3);
+  lua_pushvalue(L, 3);
+  lua_gettable(L, 2);
+  lua_settable(L, 1);
+
+  lua_pushnil(L);
+  lua_settable(L, 2);
+
+  lua_rawgeti(L, 1, 0);
+  SceneNode* des = (SceneNode*)lua_touserdata(L, -1);
+  SceneManager::GetInstance()->Move(src, des);
+
+  return 0;
+}
+
 static int remove(lua_State *L) {
 
   // lua_rawgeti(L, 1, 0);
@@ -65,13 +87,25 @@ static int remove(lua_State *L) {
   lua_settop(L, 2);
   lua_pushnil(L);
   lua_settable(L, 1);
-  
+
   return 0;
 }
 
 static int update(lua_State *L) {
-  lua_setfield(L, 1, "data");
-  lua_rawgeti(L, 1, 0);
+  lua_rawgeti(L, -1, 0);
+  SceneNode* cur = (SceneNode*)lua_touserdata(L, -1);
+  SceneManager::GetInstance()->Update(cur);
+  
+  return 0;
+}
+
+static int setVisible(lua_State *L)
+{
+  int flag = lua_tointeger(L, -2);
+  int mask = lua_tointeger(L, -1);
+  lua_rawgeti(L, -3, 0);
+  SceneNode* cur = (SceneNode*)lua_touserdata(L, -1);
+  cur->obj->setVisible(flag, mask);
 
   return 0;
 }
@@ -80,6 +114,8 @@ static const luaL_Reg scene_func[] = {
   {"insert", insert}, 
   {"remove", remove},
   {"update", update},
+  {"move", move},
+  {"setVisible", setVisible},
   {NULL, NULL}
 };
 

@@ -9,3 +9,5 @@ lauxlib.h
 luaconf.h
 luasock/*
 socket.*
+include/*
+lib/*

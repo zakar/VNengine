@@ -26,6 +26,7 @@ class SceneManager
   void Release();
   void initL(lua_State *L);
   void clear(SceneNode *cur);
+  void Move(SceneNode *src, SceneNode *des);
   void Remove(SceneNode *cur);
   void Insert(SceneNode *fa, SceneNode *cur);
   void Update(SceneNode *cur);

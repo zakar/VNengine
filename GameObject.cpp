@@ -2,7 +2,7 @@
 
 GameObject::GameObject(int ref):handler(ref) {
   canvas = new Canvas;
-  visiable = 1;
+  visiable = 0;
 }
 
 GameObject::~GameObject() {
@@ -49,7 +49,17 @@ Canvas *GameObject::canvas2Render(const SDL_Rect &dst)
   return cur;
 }
 
-bool GameObject::checkVisible()
+int GameObject::checkVisible()
 {
-  return visiable;
+  return visiable == 0;
 }
+
+void GameObject::setVisible(int flag, int mask)
+{
+  switch (flag) {
+  case FLIP : visiable ^= mask; break;
+  case SET : visiable |= mask; break;
+  case UNSET : visiable &= (~mask); break;
+  }
+}
+

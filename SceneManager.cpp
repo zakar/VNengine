@@ -34,6 +34,22 @@ void SceneManager::initL(lua_State *L) {
   root = NULL;
 }
 
+void SceneManager::Move(SceneNode *src, SceneNode *des)
+{
+  std::vector<SceneNode*> &fa_son = src->father->son;
+  fa_son.erase( std::find(fa_son.begin(), fa_son.end(), src) );
+
+  src->father = des;
+  des->son.push_back(src);
+
+  SDL_Rect rect;
+  Uint32 x, y;
+  LuaObject handler(src->ref);
+  handler.LoadClip(rect, "query");
+  handler.LoadLocation(x, y, "query");
+  fillDirtyRect(x, y, rect.w, rect.h);  
+}
+
 void SceneManager::Remove(SceneNode* cur) {
   std::vector<SceneNode*> &fa_son = cur->father->son;
   fa_son.erase( std::find(fa_son.begin(), fa_son.end(), cur) );
@@ -77,6 +93,14 @@ void SceneManager::Insert(SceneNode *fa, SceneNode *cur) {
 }
 
 void SceneManager::Update(SceneNode *cur) {
+  cur->obj->OnFrame();
+  LuaObject &handler = cur->obj->handler;
+  SDL_Rect rect;
+  Uint32 x, y;
+  handler.LoadClip(rect, "query");
+  handler.LoadLocation(x, y, "query");
+  fillDirtyRect(x, y, rect.w, rect.h);
+  
   GameSystem::resetTimer(0, FRAME_EVENT);
 }
 

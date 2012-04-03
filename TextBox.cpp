@@ -93,7 +93,7 @@ void TextBox::SetWordsToRender(std::basic_string<Uint16> word)
   nowY = WLoffY;
   wordsToRender = word;
   draw_current = draw_interval;
-  visiable = 1;
+  setVisible(GameObject::UNSET, 1);
 }
 
 void TextBox::SetPerformState(PerformState state) {
@@ -125,7 +125,7 @@ void TextBox::DrawText()
 {
   if (performState == suspend) return;
  
-  if (performState == running && visiable) {
+  if (performState == running && checkVisible()) {
     if (--draw_current <= 0) {
       if (wordsToRender[0] == '/') { //部分文字输出结束，等待用户继续，'/p'为不换行，'/n'为换行
 	wordsToRender.erase(0, 1);
@@ -163,7 +163,7 @@ void TextBox::OnMouseDown(Uint16 x, Uint16 y, Uint8 button) {
   if (!handler.ExecOnMouseRange(x, y, "query"))
     return;
 
-  if (button == SDL_BUTTON_LEFT) {
+  if (button == SDL_BUTTON_LEFT && checkVisible()) {
     switch (performState) {
     case suspend:
       Clear();
@@ -179,7 +179,7 @@ void TextBox::OnMouseDown(Uint16 x, Uint16 y, Uint8 button) {
   }
 
   if (button == SDL_BUTTON_RIGHT) 
-    visiable ^= 1;
+    setVisible(GameObject::FLIP, 1);
 }
 
 void TextBox::OnMouseUp(Uint16 x, Uint16 y, Uint8 button) {

@@ -7,8 +7,15 @@ static int resetScriptEvent(lua_State *L) {
   return 0;
 }
 
+static int resetFrameEvent(lua_State *L) {
+  int ti = lua_tointeger(L, 1);
+  GameSystem::resetTimer(ti, FRAME_EVENT);
+  return 0;
+}
+
 static const luaL_Reg gamesystemFunc[] = {
   {"resetScriptEvent", resetScriptEvent},
+  {"resetFrameEvent", resetFrameEvent},
   {NULL, NULL}
 };
 
