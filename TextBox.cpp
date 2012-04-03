@@ -19,26 +19,26 @@ TextBox* TextBox::create(int ref) {
   LuaObject handler(ref);
   handler.registerAPI(std::string("textbox"));
 
+  //font is not used, but remain here
   Uint32 width, height, WLoffX, WLoffY, WLwidth, WLheight, fontSize, BoxColor, TextColor;
   std::string imgName, fontName;
   handler.LoadWordLayer(imgName, width, height, BoxColor, TextColor, WLoffX, WLoffY, WLwidth, WLheight, \
 			fontName, fontSize, "query");
 
   if (imgName.empty()) {
-    return new TextBox(width, height, BoxColor, TextColor, fontName.c_str(), fontSize, \
+    return new TextBox(width, height, BoxColor, TextColor, \
 			      WLoffX, WLoffY, WLwidth, WLheight, ref);
   }else {
-    return new TextBox(imgName.c_str(), TextColor, fontName.c_str(), fontSize, \
+    return new TextBox(imgName.c_str(), TextColor, \
 			      WLoffX, WLoffY, WLwidth, WLheight, ref);
   }
 
 }
 
 TextBox::TextBox(Uint32 width, Uint32 height, \
-		 Uint32 BoxColor, Uint32 TextColor, const char* fontName, Uint32 fontSize, \
+		 Uint32 BoxColor, Uint32 TextColor, \
 		 Uint32 WLoffX, Uint32 WLoffY, Uint32 WLwidth, Uint32 WLheight, int ref)
   : GameObject(ref), 
-    font(fontName, fontSize), 
     TextColor(TextColor),
     WLoffX(WLoffX),
     WLoffY(WLoffY),
@@ -49,16 +49,15 @@ TextBox::TextBox(Uint32 width, Uint32 height, \
   Canvas::NewSurface(cleanlayer = NULL, WLwidth, WLheight, BoxColor);
   SDL_SetAlpha(cleanlayer, 0, 255);
 
-  font.GetTextSize(CHN, wordH, wordW);
+  Font::GetInstance()->GetTextSize(CHN, wordH, wordW);
   SetDrawInterval(DEFAULT_DRAW_INTERVAL);
   SetPerformState(suspend);
 }
 
 TextBox::TextBox(const char* imageName, \
-		 Uint32 TextColor, const char* fontName, Uint32 fontSize, \
+		 Uint32 TextColor, \
 		 Uint32 WLoffX, Uint32 WLoffY, Uint32 WLwidth, Uint32 WLheight, int ref)
   : GameObject(ref),
-    font(fontName, fontSize), 
     TextColor(TextColor),
     WLoffX(WLoffX),
     WLoffY(WLoffY),
@@ -73,7 +72,7 @@ TextBox::TextBox(const char* imageName, \
   SDL_SetAlpha(canvas->surface, SDL_SRCALPHA, 255);
   SDL_SetAlpha(cleanlayer, 0, 255);
 
-  font.GetTextSize(CHN, wordH, wordW);
+  Font::GetInstance()->GetTextSize(CHN, wordH, wordW);
   SetDrawInterval(DEFAULT_DRAW_INTERVAL);
   SetPerformState(suspend);
 }
@@ -94,7 +93,7 @@ void TextBox::SetWordsToRender(std::basic_string<Uint16> word)
   nowY = WLoffY;
   wordsToRender = word;
   draw_current = draw_interval;
-  visiable = 1;
+  setVisible(GameObject::UNSET, 1);
 }
 
 void TextBox::SetPerformState(PerformState state) {
@@ -112,7 +111,7 @@ void TextBox::ProcessWord(Uint16 word)
 
   if (nowY + wordH > WLheight) return;
   
-  font.DrawTextBlended(str, TextColor, canvas->surface, nowX, nowY);
+  Font::GetInstance()->DrawTextBlended(str, TextColor, canvas->surface, nowX, nowY);
   nowX += wordW + WIDTH_DELTA;
 }
 
@@ -126,7 +125,7 @@ void TextBox::DrawText()
 {
   if (performState == suspend) return;
  
-  if (performState == running && visiable) {
+  if (performState == running && checkVisible()) {
     if (--draw_current <= 0) {
       if (wordsToRender[0] == '/') { //部分文字输出结束，等待用户继续，'/p'为不换行，'/n'为换行
 	wordsToRender.erase(0, 1);
@@ -164,11 +163,11 @@ void TextBox::OnMouseDown(Uint16 x, Uint16 y, Uint8 button) {
   if (!handler.ExecOnMouseRange(x, y, "query"))
     return;
 
-  if (button == SDL_BUTTON_LEFT) {
+  if (button == SDL_BUTTON_LEFT && checkVisible()) {
     switch (performState) {
     case suspend:
       Clear();
-      GameSystem::resetScriptTimer(0);
+      GameSystem::resetTimer(0, SCRIPT_EVENT);
       break;
     case running: 
       while (performState == running) DrawText();
@@ -180,7 +179,7 @@ void TextBox::OnMouseDown(Uint16 x, Uint16 y, Uint8 button) {
   }
 
   if (button == SDL_BUTTON_RIGHT) 
-    visiable ^= 1;
+    setVisible(GameObject::FLIP, 1);
 }
 
 void TextBox::OnMouseUp(Uint16 x, Uint16 y, Uint8 button) {

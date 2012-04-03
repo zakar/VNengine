@@ -1,7 +1,7 @@
 CC = g++
-INCLUDE = -I./ -I/usr/include/SDL
+INCLUDE = -I./ -I/usr/include/SDL -I./include/lua
 CFLAGS = -O2 $(INCLUDE)
-LIBS = -lSDL -lSDL_image -lSDL_ttf -L./ -llua
+LIBS = -Wl,-E -lSDL -lSDL_image -lSDL_ttf -L./lib -llua
 TARGET = engine
 
 OBJ = \

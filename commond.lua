@@ -1,4 +1,13 @@
-function getFrame(fun)
+LocationFunc = {}
+ClipFunc = {}
+RangeCheckFunc = {}
+SceneFunc = {}
+TimerFunc = {}
+TextFunc = {}
+
+local coroutine = coroutine
+
+function subRoutine(fun)
    local func = coroutine.create(fun)
    return function ()
 	     local state = coroutine.resume(func)
@@ -42,6 +51,18 @@ LocationFunc.stable = function (x, y)
 				end
 		      end
 
+LocationFunc.move = function (x, y, dx, dy, ax, ay) 
+		       return function (cmd)
+				 if (dx ~= 0 or dy ~= 0) and cmd == 'update' then
+				    x = x + dx
+				    y = y + dy
+				    dx = dx + ax
+				    dy = dy + ay
+				 end
+				 return { x = x, y = y }
+			      end
+		    end
+
 ClipFunc.stable = function (x, y, w, h)
 		     return function (cmd)
 			       return { x = x, y = y, w = w, h = h }
@@ -49,11 +70,13 @@ ClipFunc.stable = function (x, y, w, h)
 		  end
 
 
-ClipFunc.move = function (x, y, w, h, dx, dy)
+ClipFunc.move = function (x, y, w, h, dx, dy, ax, ay)
 		   return function (cmd)
-			     if cmd == 'update' then
+			     if (dx ~= 0 or dy ~= 0) and cmd == 'update' then
 				x = x + dx
 				y = y + dy
+				dx = dx + ax
+				dy = dy + ay
 			     end
 			     return { x = x, y = y, w = w, h = h }
 			  end
@@ -66,31 +89,6 @@ RangeCheckFunc.retangle = function (ux, uy, w, h)
 				       return ux <= x and x < ux+w and uy <= y and y < uy + h
 				    end
 			  end
-
-
--- SceneFunc.GetNextFrameTime = function (t, last_ti)
--- 				local cur = -1
--- 				local ti
--- 				for k, v in pairs(t) do
--- 				   if type(k) == 'string' and k ~= 'data' then
--- 				      ti = SceneFunc.GetNextFrameTime(t[k], last_ti)
--- 				      if ti >= 0 and (cur == -1 or ti < cur) then					 
--- 					 cur = ti;
--- 				      end
--- 				   end
--- 				end
-				
--- 				if type(t['data']) == 'table' and type(t['data']['frame_event']) == 'function' then
--- 				   ti = t['data']['frame_event'](last_ti)
--- 				   if ti >= 0 and (cur == -1 or ti < cur) then
--- 				      cur = ti;
--- 				   end
--- 				end
-
--- 				if cur == -1 then cur = 1000 end
--- 				return cur
--- 			     end
-
 
 TimerFunc.FrameTimer = function (interval)
 			  local current = interval
@@ -109,11 +107,15 @@ TimerFunc.ScriptEvent = function (self, ti)
 			   self.resetScriptEvent(ti)
 			   WaitFrame(1)
 			end
-
-
+TimerFunc.FrameEvent = function (self, ti)
+			 self.resetFrameEvent(ti)
+		      end
 
 TextFunc.text = function (self, text)
---		   print(text)
 		   self:sendtext(text)
 		   WaitFrame(1)
 		end
+
+TextFunc.FLIP = 0
+TextFunc.SET = 1
+TextFunc.UNSET = 2

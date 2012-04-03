@@ -7,3 +7,7 @@ lua.h
 lualib.h
 lauxlib.h
 luaconf.h
+luasock/*
+socket.*
+include/*
+lib/*

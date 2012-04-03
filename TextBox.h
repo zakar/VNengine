@@ -21,11 +21,11 @@ class TextBox : public GameObject
   ~TextBox();
   static TextBox* create(int ref);
   TextBox(Uint32 width, Uint32 height,					\
-	  Uint32 BoxColor, Uint32 TextColor, const char* fontName, Uint32 fontSize, \
+	  Uint32 BoxColor, Uint32 TextColor, \
 	  Uint32 WLoffX, Uint32 WLoffY, Uint32 WLwidth, Uint32 WLheight, int ref);
     
   TextBox(const char* imageName, \
-	  Uint32 TextColor, const char* fontName, Uint32 fontSize,\
+	  Uint32 TextColor, \
 	  Uint32 WLoffX, Uint32 WLoffY, Uint32 WLwidth, Uint32 WLheight, int ref);
 
  public:
@@ -42,7 +42,6 @@ class TextBox : public GameObject
   PerformState performState; //0等待脚本载入文字，1正在输出文字，2文字输出完毕等待用户继续反应
   
  private:
-  Font font;
   std::basic_string<Uint16> wordsToRender;
   Uint32 draw_interval, draw_current; 
 
