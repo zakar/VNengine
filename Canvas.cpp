@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "Exception.h"
 #include "Canvas.h"
+#include "BlockAllocator.h"
 
 Canvas::Canvas() {
   surface = NULL;
@@ -188,3 +189,14 @@ void Canvas::ColorRect(Uint32 color) {
   SDL_FillRect(surface, &clip, color);
 }
 
+static BlockAllocator<Canvas, 400> canvasAllocator;
+
+void* Canvas::operator new(size_t s)
+{
+  return (void*)canvasAllocator.Allocate();
+}
+
+void Canvas::operator delete(void* addr)
+{
+  canvasAllocator.Free((Canvas*)addr);
+}

@@ -38,6 +38,10 @@ class Canvas
   void LoadImage(const char* fileName);
   void ColorRect(Uint32 color);
   void BlendSurface(SDL_Surface *dst);
+
+ public:
+  void* operator new(size_t s);
+  void operator delete(void* addr);
     
  public: 
   Uint32 color_key;
