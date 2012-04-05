@@ -45,10 +45,13 @@ TextBox::TextBox(Uint32 width, Uint32 height, \
     WLwidth(WLwidth),
     WLheight(WLheight)
 {
-  canvas->NewSurface(width, height, BoxColor);
-  Canvas::NewSurface(cleanlayer = NULL, WLwidth, WLheight, BoxColor);
-  SDL_SetAlpha(cleanlayer, 0, 255);
+  canvas->LoadRaw(width, height);
+  Canvas::ColorRect(canvas->surface, 0, 0, width, height, BoxColor);
+  cleanlayer.LoadRaw(WLwidth, WLheight);
+  Canvas::ColorRect(cleanlayer.surface, 0, 0, WLwidth, WLheight, BoxColor);
+  SDL_SetAlpha(cleanlayer.surface, 0, 255);
 
+  Font::GetInstance()->GetTextSize(CHN, wordH, wordW);
   Font::GetInstance()->GetTextSize(CHN, wordH, wordW);
   SetDrawInterval(DEFAULT_DRAW_INTERVAL);
   SetPerformState(suspend);
@@ -65,12 +68,13 @@ TextBox::TextBox(const char* imageName, \
     WLheight(WLheight)
 {
   canvas->LoadImage(imageName);
-  Canvas::NewSurface(cleanlayer = NULL, WLwidth, WLheight);
+  cleanlayer.LoadRaw(WLwidth, WLheight);
+
   SDL_Rect clip = { WLoffX, WLoffY, WLwidth, WLheight };
   SDL_SetAlpha(canvas->surface, 0, 255);
-  Canvas::BlendSurface(canvas->surface, cleanlayer, 0, 0, clip, DISABLE_ALPHA, DISABLE_COLORKEY);
+  Canvas::BlendSurface(canvas->surface, cleanlayer.surface, 0, 0, clip, DISABLE_ALPHA, DISABLE_COLORKEY);
   SDL_SetAlpha(canvas->surface, SDL_SRCALPHA, 255);
-  SDL_SetAlpha(cleanlayer, 0, 255);
+  SDL_SetAlpha(cleanlayer.surface, 0, 255);
 
   Font::GetInstance()->GetTextSize(CHN, wordH, wordW);
   SetDrawInterval(DEFAULT_DRAW_INTERVAL);
@@ -80,7 +84,7 @@ TextBox::TextBox(const char* imageName, \
 void TextBox::Clear() //此处清空文本的策略是染一种色，然后将ColorKey设为这种颜色，得到透明的surface
 {
   SDL_Rect clip = { 0, 0, WLwidth, WLheight };
-  Canvas::BlendSurface(cleanlayer, canvas->surface, WLoffX, WLoffY, clip, DISABLE_ALPHA, DISABLE_COLORKEY);
+  Canvas::BlendSurface(cleanlayer.surface, canvas->surface, WLoffX, WLoffY, clip, DISABLE_ALPHA, DISABLE_COLORKEY);
 }
 
 void TextBox::SetDrawInterval(Uint32 draw_interval) {

@@ -3,6 +3,7 @@
 
 #include "SDL/SDL.h"
 #include "SDL/SDL_image.h"
+#include <string>
 
 #define BPP 32
 #define RMASK 0x00ff0000
@@ -24,27 +25,32 @@ class Canvas
 {
  public:
   Canvas();
+  Canvas(Canvas* cav);
   virtual ~Canvas();
 
- public:	
-  static void NewSurface(SDL_Surface *&surface, Uint32 width, Uint32 height, Uint32 color = 0);
-  static void LoadImage(SDL_Surface *&surface, const char* fileName);
-  static void ColorRect(SDL_Surface *surface, Uint32 x, Uint32 y, Uint32 width, Uint32 height, Uint32 color);
-  static void BlendSurface(SDL_Surface *src, SDL_Surface *dst, Uint32 dst_x, Uint32 dst_y, SDL_Rect clip, Uint32 global_alpha, Uint32 color_key);
+ public:	 
   static bool ClipSurface(SDL_Rect &dst, SDL_Rect clip);
+  static void BlendSurface(SDL_Surface *surface, SDL_Surface *dst, Uint32 dst_x, Uint32 dst_y, SDL_Rect clip, Uint32 global_alpha, Uint32 color_key);
+  static void ColorRect(SDL_Surface *surface, Uint32 x, Uint32 y, Uint32 width, Uint32 height, Uint32 color);
 
  public:
-  void NewSurface(Uint32 width, Uint32 height, Uint32 color = 0);
+  void LoadRaw(Uint32 width, Uint32 height);
   void LoadImage(const char* fileName);
   void ColorRect(Uint32 color);
   void BlendSurface(SDL_Surface *dst);
+
+ public:
+  void* operator new(size_t s);
+  void operator delete(void* addr);
     
  public: 
   Uint32 color_key;
   Uint32 global_alpha;
   Uint32 dst_x, dst_y;
   SDL_Rect clip;
+
   SDL_Surface *surface;
+  std::string cached_name;
 };
 
 #endif

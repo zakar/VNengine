@@ -5,6 +5,7 @@ LIBS = -Wl,-E -lSDL -lSDL_image -lSDL_ttf -L./lib -llua
 TARGET = engine
 
 OBJ = \
+./ImagePool.o \
 ./Canvas.o \
 ./LuaObject.o \
 ./GameObject.o \

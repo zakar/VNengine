@@ -46,7 +46,7 @@ class TextBox : public GameObject
   Uint32 draw_interval, draw_current; 
 
  private:
-  SDL_Surface *cleanlayer;
+  Canvas cleanlayer;
   Uint32 WLoffX, WLoffY;
   Uint32 WLwidth, WLheight;
   

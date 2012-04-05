@@ -6,9 +6,6 @@ GameObject::GameObject(int ref):handler(ref) {
 }
 
 GameObject::~GameObject() {
-  if (canvas->surface) {
-    SDL_FreeSurface(canvas->surface);
-  }
   delete canvas;
 }
 
@@ -38,8 +35,7 @@ bool GameObject::doClip(SDL_Rect &dst)
 
 Canvas *GameObject::canvas2Render(const SDL_Rect &dst)
 {
-  Canvas* cur = new Canvas;
-  *cur = *canvas;
+  Canvas* cur = new Canvas(canvas);
   cur->clip.x += dst.x - cur->dst_x;
   cur->clip.y += dst.y - cur->dst_y;
   cur->clip.w = dst.w;

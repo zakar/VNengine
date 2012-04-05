@@ -6,7 +6,6 @@ Sprite::Sprite(int ref):GameObject(ref) {
 
 Sprite* Sprite::create(int ref) {
   Sprite *pt = new Sprite(ref);
-  pt->image_name.clear();
   return pt;
 }
 
@@ -19,11 +18,9 @@ void Sprite::OnFrame() {
   handler.LoadColorKey(canvas->color_key, "query");
   handler.LoadGlobalAlpha(canvas->global_alpha, "query");
 
-  std::string tmp_name;
-  handler.LoadImgName(tmp_name, "query");
-  if (tmp_name == image_name) return;
-  image_name = tmp_name;
-  canvas->LoadImage(image_name.c_str());
+  std::string img_name;
+  handler.LoadImgName(img_name, "query");
+  canvas->LoadImage(img_name.c_str());
 }
 
 void Sprite::OnKeyDown(SDLKey key) {

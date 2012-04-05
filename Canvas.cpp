@@ -2,44 +2,25 @@
 #include <algorithm>
 #include "Exception.h"
 #include "Canvas.h"
+#include "BlockAllocator.h"
+#include "ImagePool.h"
 
 Canvas::Canvas() {
   surface = NULL;
 }
 
+Canvas::Canvas(Canvas* cav) {
+  *this = *cav;
+  surface = NULL;
+  if (cav->surface) {
+    cached_name = cav->cached_name;
+    surface = ImagePool::getImage(cached_name);
+  }
+}
+
 Canvas::~Canvas() {
-  // if ( surface ) {
-  //   SDL_FreeSurface(surface);
-  // }
-}
-
-void Canvas::NewSurface(SDL_Surface *&surface, Uint32 width, Uint32 height, Uint32 color) {
   if (surface) {
-    SDL_FreeSurface(surface);
-    surface = NULL;
-  }
-  
-  surface = SDL_CreateRGBSurface(DEFAULT_SURFACE_FLAG, width, height, BPP, RMASK, GMASK, BMASK, AMASK);
-  ColorRect(surface, 0, 0, width, height, color);
-}
-
-
-void Canvas::LoadImage(SDL_Surface *&surface, const char* fileName) {
-  if (surface) {
-    SDL_FreeSurface(surface);
-    surface = 0;
-  }
-
-  SDL_Surface *pixel = SDL_CreateRGBSurface(DEFAULT_SURFACE_FLAG, 1, 1, BPP, RMASK, GMASK, BMASK, AMASK);
-  SDL_Surface *tmp = IMG_Load(fileName);
-  surface = SDL_ConvertSurface(tmp, pixel->format, NULL);
-  SDL_FreeSurface(pixel);
-  SDL_FreeSurface(tmp);
-	
-  if (!surface) {
-    char buf[256];
-    sprintf(buf, "Load file failed: %s", fileName);
-    throw Exception(buf);
+    ImagePool::freeImage(cached_name);
   }
 }
 
@@ -52,61 +33,6 @@ void Canvas::ColorRect(SDL_Surface *surface, Uint32 x, Uint32 y, Uint32 width, U
   SDL_FillRect(surface, &rec, color);
 }
 
-void Canvas::BlendSurface(SDL_Surface *surface, SDL_Surface *dst, Uint32 dst_x, Uint32 dst_y, SDL_Rect clip, Uint32 global_alpha, Uint32 color_key)
-{
-  if (surface == NULL || dst == NULL) return;
-
-  SDL_Rect dst_clip = { dst_x, dst_y, clip.w, clip.h }, rect = { 0, 0, dst->w, dst->h };
-  ClipSurface(dst_clip, rect);
-
-  SDL_Rect src_clip = { 0, 0, surface->w, surface->h };
-  ClipSurface(src_clip, clip);
-  
-  Uint32 width = std::min(src_clip.w, dst_clip.w), height = std::min(src_clip.h, dst_clip.h);
-
-  //
-  src_clip.w = width;  src_clip.h = height;
-  dst_clip.w = width;  dst_clip.h = height;
-
-  if (global_alpha != DISABLE_ALPHA) SDL_SetAlpha(surface, SDL_SRCALPHA, global_alpha);
-  if (color_key != DISABLE_COLORKEY) SDL_SetColorKey(surface, SDL_SRCCOLORKEY, color_key);
-  SDL_BlitSurface(surface, &src_clip, dst, &dst_clip);
-  if (global_alpha == DISABLE_ALPHA) SDL_SetAlpha(surface, 0, 0);
-  if (color_key == DISABLE_COLORKEY) SDL_SetColorKey(surface, 0, 0);
-
-  
-  //
-
-  
-  // SDL_LockSurface(surface);
-  // SDL_LockSurface(dst);
-
-  // //此处假设像素是32位的,即pitch和w是相等的
-  // Uint32* dst_pt = (Uint32*)dst->pixels + dst->w * dst_clip.y + dst_clip.x;
-  // Uint32* src_pt = (Uint32*)surface->pixels + surface->w * src_clip.y + src_clip.x;
-  // Uint8* alpha_pt = (Uint8*)src_pt + 3;
-
-  // Uint32 pixelrb, pixelg, mask1, mask2;
-  // for (Uint32 i = 0; i < height; ++i) {
-    
-  //   for (Uint32 j = 0; j < width; ++j, ++dst_pt, ++src_pt, alpha_pt += 4) {
-
-  //     if ((*src_pt & RGBMASK) == color_key) continue;
-
-  //     mask1 = (*alpha_pt * global_alpha) >> 8;
-  //     mask2 = mask1 ^ 0xff;
-  //     pixelrb = ((*dst_pt & RBMASK) * mask2 + (*src_pt & RBMASK) * mask1) >> 8;
-  //     pixelg = ((*dst_pt & GMASK) * mask2 + (*src_pt & GMASK) * mask1) >> 8;
-  //     *dst_pt = (pixelrb & RBMASK) | (pixelg & GMASK) | (*dst_pt & AMASK);
-  //   }
-
-  //   dst_pt += dst->w - width;
-  //   src_pt += surface->w - width;
-  // }
-
-  // SDL_UnlockSurface(dst);
-  // SDL_UnlockSurface(surface);
-}
 
 bool Canvas::ClipSurface(SDL_Rect &dst, SDL_Rect clip)
 {
@@ -129,6 +55,25 @@ bool Canvas::ClipSurface(SDL_Rect &dst, SDL_Rect clip)
   return true;
 }
 
+void Canvas::BlendSurface(SDL_Surface *surface, SDL_Surface *dst, Uint32 dst_x, Uint32 dst_y, SDL_Rect clip, Uint32 global_alpha, Uint32 color_key)
+{
+  if (surface == NULL || dst == NULL) return;
+
+  SDL_Rect dst_clip = { dst_x, dst_y, clip.w, clip.h }, rect = { 0, 0, dst->w, dst->h };
+  ClipSurface(dst_clip, rect);
+  SDL_Rect src_clip = { 0, 0, surface->w, surface->h };
+  ClipSurface(src_clip, clip);
+  
+  Uint32 width = std::min(src_clip.w, dst_clip.w), height = std::min(src_clip.h, dst_clip.h);
+  
+  src_clip.w = width;  src_clip.h = height;
+  dst_clip.w = width;  dst_clip.h = height;
+  if (global_alpha != DISABLE_ALPHA) SDL_SetAlpha(surface, SDL_SRCALPHA, global_alpha);
+  if (color_key != DISABLE_COLORKEY) SDL_SetColorKey(surface, SDL_SRCCOLORKEY, color_key);
+  SDL_BlitSurface(surface, &src_clip, dst, &dst_clip);
+  if (global_alpha == DISABLE_ALPHA) SDL_SetAlpha(surface, 0, 0);
+  if (color_key == DISABLE_COLORKEY) SDL_SetColorKey(surface, 0, 0);
+}
 
 void Canvas::BlendSurface(SDL_Surface *dst)
 {
@@ -142,7 +87,6 @@ void Canvas::BlendSurface(SDL_Surface *dst)
   
   Uint32 width = std::min(src_clip.w, dst_clip.w), height = std::min(src_clip.h, dst_clip.h);
 
-  //
   src_clip.w = width;  src_clip.h = height;
   dst_clip.w = width;  dst_clip.h = height;
 
@@ -154,37 +98,35 @@ void Canvas::BlendSurface(SDL_Surface *dst)
 }
 
 
-void Canvas::NewSurface(Uint32 width, Uint32 height, Uint32 color) {
+void Canvas::LoadRaw(Uint32 width, Uint32 height ) {
   if (surface) {
-    SDL_FreeSurface(surface);
+    ImagePool::freeImage(cached_name);
     surface = NULL;
   }
-  
-  surface = SDL_CreateRGBSurface(DEFAULT_SURFACE_FLAG, width, height, BPP, RMASK, GMASK, BMASK, AMASK);
-  ColorRect(surface, 0, 0, width, height, color);
+  surface = ImagePool::loadImageRaw(cached_name, width, height);
 }
-
 
 void Canvas::LoadImage(const char* fileName) {
   if (surface) {
-    SDL_FreeSurface(surface);
-    surface = 0;
+    ImagePool::freeImage(cached_name);
+    surface = NULL;
   }
-
-  SDL_Surface *pixel = SDL_CreateRGBSurface(DEFAULT_SURFACE_FLAG, 1, 1, BPP, RMASK, GMASK, BMASK, AMASK);
-  SDL_Surface *tmp = IMG_Load(fileName);
-  surface = SDL_ConvertSurface(tmp, pixel->format, NULL);
-  SDL_FreeSurface(pixel);
-  SDL_FreeSurface(tmp);
-	
-  if (!surface) {
-    char buf[256];
-    sprintf(buf, "Load file failed: %s", fileName);
-    throw Exception(buf);
-  }
+  cached_name = fileName;
+  surface = ImagePool::loadImageFile(cached_name);
 }
 
 void Canvas::ColorRect(Uint32 color) {
   SDL_FillRect(surface, &clip, color);
 }
 
+static BlockAllocator<Canvas, 400> canvasAllocator;
+
+void* Canvas::operator new(size_t s)
+{
+  return (void*)canvasAllocator.Allocate();
+}
+
+void Canvas::operator delete(void* addr)
+{
+  canvasAllocator.Free((Canvas*)addr);
+}

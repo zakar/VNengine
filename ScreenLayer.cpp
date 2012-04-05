@@ -23,7 +23,7 @@ void ScreenLayer::SetWindowMode( Uint32 width, Uint32 height, bool fullScreen, i
 	  throw(Exception("窗口设定失败!"));
 	}
 
-	mix_canvas.NewSurface(width, height, 0xff000000);
+	mix_canvas.LoadRaw(width, height);
 	mix_canvas.global_alpha = DISABLE_ALPHA;
 	mix_canvas.color_key = DISABLE_COLORKEY;
 	mix_canvas.dst_x = 0;
