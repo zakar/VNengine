@@ -118,14 +118,17 @@ SDL_Color Font::Conv2SDLcolor(Uint32 color) {
   return sdl_color;
 }
 
-SDL_Surface* Font::createTextSurface(const Uint16* text, Uint32 color)
+Canvas* Font::createTextSurface(const Uint16* text, Uint32 color)
 { 
   Uint32 h, w;
   GetTextSize(text, h, w);
-  SDL_Surface *sur = NULL;
-  Canvas::NewSurface(sur, w, h, 0xff000000);
-  if (sur == NULL)
-    throw Exception("Failed new surface");
-  DrawTextBlended(text, color, sur, 0, 0);
+  Canvas *sur = new Canvas;
+  sur->LoadRaw(w, h);
+  sur->clip.x = 0;
+  sur->clip.y = 0;
+  sur->clip.w = w;
+  sur->clip.h = h;
+  sur->ColorRect(0x00000000);
+  DrawTextBlended(text, color, sur->surface, 0, 0);
   return sur;
 }

@@ -172,12 +172,6 @@ void SceneManager::drawDirtyRect()
       fillDirtyRect(x, y, rect.w, rect.h);
     }
 
-    while (bulletText.size() && bulletText[0]->dst_x + bulletText[0]->clip.w < 0) {
-      SDL_FreeSurface(bulletText[0]->surface);
-      delete bulletText[0];
-      bulletText.erase(bulletText.begin());
-    }
-
     bulletTextWait = bulletTextSpeed;
   }
   //
@@ -210,13 +204,21 @@ void SceneManager::drawDirtyRect()
   
   // last to render bullet
   for (int i = 0; i < bulletText.size(); ++i) {
-    //    printf("%d %d %d %d\n", bulletText[i]->dst_x, bulletText[i]->dst_y, bulletText[i]->clip.w, bulletText[i]->clip.h);
-    Canvas *toDraw = new Canvas;
-    *toDraw = *bulletText[i];
+    Canvas *toDraw = new Canvas(bulletText[i]);
     ScreenLayer::GetInstance()->AddCanvas(toDraw);
   }
 
   memset(dirtyinfo, 0, sizeof(dirtyinfo));
+
+  // clear passed bulletText may trigger fill dirty rect event
+  while (bulletText.size() && bulletText[0]->dst_x + bulletText[0]->clip.w < 0) {
+    Uint32 &x = bulletText[0]->dst_x;
+    Uint32 &y = bulletText[0]->dst_y;
+    SDL_Rect &rect = bulletText[0]->clip;
+    fillDirtyRect(x, y, rect.w, rect.h);
+    delete bulletText[0];
+    bulletText.erase(bulletText.begin());
+  }
 }
 
 void SceneManager::checkActiveObject()
@@ -252,10 +254,13 @@ void SceneManager::checkActiveObject()
 void SceneManager::createBulletText(const char* text, Uint32 color)
 {
   std::basic_string<Uint16> utext = Helper::GetUTF16(text);
-  Canvas *bt = new Canvas;
-  bt->surface = Font::GetInstance()->createTextSurface(utext.c_str(), color);
+  Canvas *bt;
+  for (int i = utext.size()-1; i >= 0; --i)  //simple fliter -_-
+    if (utext[i] <= 32) utext.erase(i, 1);
+
+  bt = Font::GetInstance()->createTextSurface(utext.c_str(), color);
   bt->dst_x = ScreenLayer::GetInstance()->getWidth();
-  bt->dst_y = 20; //magic number ?
+  bt->dst_y = rand()%(ScreenLayer::GetInstance()->getHeight()/2)+20;  // just for test -_-
   bt->clip.x = 0;
   bt->clip.y = 0;
   bt->clip.w = bt->surface->w;

@@ -20,9 +20,6 @@ class Sprite : public GameObject
   void OnMouseDown(Uint16 x, Uint16 y, Uint8 button);
   void OnMouseUp(Uint16 x, Uint16 y, Uint8 button);
   void OnMouseMove(Uint16 x, Uint16 y);
-
- private: //需要缓存在类中的数据
-  std::string image_name;
 };
 
 #endif

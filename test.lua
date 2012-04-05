@@ -135,6 +135,9 @@ local function test_chapter()
 	    }
 	 )
 
+   local bg = Scene.bg
+   TimerFunc:ScriptEvent(2000)
+
    Scene.bg:insert('maintext',
    		   {
    		      data = { 
@@ -159,13 +162,9 @@ local function test_chapter()
    		   }
    		)
 
-
-   local bg = Scene.bg
    maintext = Scene.bg.maintext
    
    maintext:setVisible(TextFunc.SET, 2)
-
-   TimerFunc:ScriptEvent(2000)
 
    bg.data.img = 'data/bg_01a.png'
    bg:update()

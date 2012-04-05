@@ -5,6 +5,7 @@
 #include "SceneManagerLuaAPI.h"
 #include "EventHandler.h"
 #include "LuaObject.h"
+#include "ImagePool.h"
 #include "Exception.h"
 
 static SDL_TimerID frame_timer_id = NULL;
@@ -89,8 +90,10 @@ void GameSystem::Initialize(Uint32 width, Uint32 height, bool fullScreen, int bp
 		throw Exception("GameSystem:: Failed to initialize SDL");
 	}
 
+	ImagePool::Init();
 	ScreenLayer::GetInstance()->SetWindowMode(width, height, fullScreen, bpp);
 	ScreenLayer::GetInstance()->SetTitle(title);
+
 
 	L = luaL_newstate();
 	luaL_openlibs(L);
@@ -147,5 +150,6 @@ void GameSystem::Run() {
 void GameSystem::Release() {
   	ScreenLayer::GetInstance()->Release();
 	SceneManager::GetInstance()->Release();
+	ImagePool::ShutDown();
 }
 
